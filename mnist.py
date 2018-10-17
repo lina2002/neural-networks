@@ -1,7 +1,7 @@
 import numpy as np
 from extract_data import extract_images, extract_labels
+from plotting import plot_confusion_matrices
 from sklearn.utils.extmath import softmax
-from scipy.misc import logsumexp
 
 
 class SingleLayerNN:
@@ -25,10 +25,6 @@ class SingleLayerNN:
     def _feed(self, X):
         return softmax(np.dot(X, self.weights) + self.bias)
 
-    def _cost(self, X, y): # think about it!
-        y_pred = self._feed(X)
-        return -np.mean(np.dot(y, np.log(y_pred)))
-
     def _d_cost(self, X, y):
         y_pred = self._feed(X)
         return np.dot(np.transpose(X), y_pred-y), np.mean(y_pred-y, axis=0)
@@ -42,7 +38,7 @@ class SingleLayerNN:
             permuted_indices = np.random.permutation(self.number_of_data_points)
             for i in range(0, self.number_of_data_points, self.batch_size):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
-                (delta_w, delta_b) = self._d_cost(X[selected_data_points], y[selected_data_points])
+                delta_w, delta_b = self._d_cost(X[selected_data_points], y[selected_data_points])
                 self.weights -= delta_w * self.learning_rate
                 self.bias -= delta_b * self.learning_rate
 
@@ -61,9 +57,13 @@ class SingleLayerNN:
 
 
 def compute_accuracy(predictions, labels):
-    correctly_predicted = np.sum(predictions==labels)
+    correctly_predicted = np.sum(predictions == labels)
     all = labels.shape[0]
     return 100*correctly_predicted/all
+
+
+def train_validation_split(images, labels, train_data_size):
+    return images[:train_data_size], labels[:train_data_size], images[train_data_size:], labels[train_data_size:]
 
 
 if __name__ == "__main__":
@@ -76,10 +76,7 @@ if __name__ == "__main__":
     labels = labels[randomize]
 
     train_data_size = 55_000
-    training_images = images[:train_data_size]
-    training_labels = labels[:train_data_size]
-    valid_images = images[train_data_size:]
-    valid_labels = labels[train_data_size:]
+    training_images, training_labels, valid_images, valid_labels = train_validation_split(images, labels, train_data_size)
 
     model = SingleLayerNN(28*28, 10, train_data_size)
     model.fit(training_images, training_labels, valid_images, valid_labels)
@@ -91,3 +88,4 @@ if __name__ == "__main__":
 
     print(compute_accuracy(predictions, eval_labels))
 
+    plot_confusion_matrices(eval_labels, predictions, classes=range(10))
