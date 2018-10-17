@@ -55,6 +55,7 @@ def extract_labels(filename, one_hot=False):
 
 class SingleLayerNN:
     init_scale = 0.05
+    # learning_rate = np.arange(0.1, 0.01, -0.01)
     learning_rate = 0.1
     batch_size = 128
     num_of_epochs = 10
@@ -65,10 +66,11 @@ class SingleLayerNN:
         self.number_of_data_points = number_of_data_points
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
-        self.weights = 2 * self.init_scale * np.random.rand(number_of_inputs, number_of_outputs) - self.init_scale
+        self.weights = 2*self.init_scale*np.random.rand(number_of_inputs, number_of_outputs) - self.init_scale
+        self.bias = 2*self.init_scale*np.random.rand(number_of_outputs) - self.init_scale
 
     def _feed(self, X):
-        return softmax(np.dot(X, self.weights))
+        return softmax(np.dot(X, self.weights) + self.bias)
 
     def _cost(self, X, y): # think about it!
         y_pred = self._feed(X)
@@ -79,7 +81,7 @@ class SingleLayerNN:
         return np.dot(np.transpose(X), y_pred-y)
 
     def predict(self, X):
-            return np.argmax(self._feed(X), 1)
+        return np.argmax(self._feed(X), 1)
 
     def fit(self, X, y, X_valid, y_valid):
         for epoch in range(self.num_of_epochs):
@@ -107,6 +109,10 @@ if __name__ == "__main__":
     images = extract_images('train-images-idx3-ubyte.gz')
     images = np.reshape(images, (-1, 28*28))
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
+
+    randomize = np.random.permutation(images.shape[0])
+    images = images[randomize]
+    labels = labels[randomize]
 
     train_data_size = 55_000
     training_images = images[:train_data_size]
