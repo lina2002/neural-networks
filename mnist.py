@@ -55,10 +55,9 @@ def extract_labels(filename, one_hot=False):
 
 class SingleLayerNN:
     init_scale = 0.05
-    # learning_rate = np.arange(0.1, 0.01, -0.01)
     learning_rate = 0.1
-    batch_size = 128
-    num_of_epochs = 10
+    batch_size = 10
+    num_of_epochs = 20
 
     def __init__(self, number_of_inputs, number_of_outputs, number_of_data_points):
         self.number_of_inputs = number_of_inputs
@@ -69,6 +68,9 @@ class SingleLayerNN:
         self.weights = 2*self.init_scale*np.random.rand(number_of_inputs, number_of_outputs) - self.init_scale
         self.bias = 2*self.init_scale*np.random.rand(number_of_outputs) - self.init_scale
 
+        self.validation_accuracy = 0
+        self.old_weights = self.weights
+
     def _feed(self, X):
         return softmax(np.dot(X, self.weights) + self.bias)
 
@@ -78,7 +80,7 @@ class SingleLayerNN:
 
     def _d_cost(self, X, y):
         y_pred = self._feed(X)
-        return np.dot(np.transpose(X), y_pred-y)
+        return np.dot(np.transpose(X), y_pred-y), np.mean(y_pred-y, axis=0)
 
     def predict(self, X):
         return np.argmax(self._feed(X), 1)
@@ -89,14 +91,22 @@ class SingleLayerNN:
             permuted_indices = np.random.permutation(self.number_of_data_points)
             for i in range(0, self.number_of_data_points, self.batch_size):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
-                delta = self._d_cost(X[selected_data_points], y[selected_data_points])
-                self.weights -= delta * self.learning_rate
+                (delta_w, delta_b) = self._d_cost(X[selected_data_points], y[selected_data_points])
+                self.weights -= delta_w * self.learning_rate
+                self.bias -= delta_b * self.learning_rate
 
             training_accuracy = compute_accuracy(self.predict(X), np.argmax(y, 1))
             validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
 
             print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(validation_accuracy))
+
+            if self.validation_accuracy < validation_accuracy:
+                self.validation_accuracy = validation_accuracy
+                self.old_weights = self.weights
+            else:
+                self.weights = self.old_weights
+                self.learning_rate = 0.5*self.learning_rate
 
 
 def compute_accuracy(predictions, labels):
@@ -107,7 +117,7 @@ def compute_accuracy(predictions, labels):
 
 if __name__ == "__main__":
     images = extract_images('train-images-idx3-ubyte.gz')
-    images = np.reshape(images, (-1, 28*28))
+    images = np.reshape(images, (-1, 28*28))/255
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
 
     randomize = np.random.permutation(images.shape[0])
@@ -124,7 +134,7 @@ if __name__ == "__main__":
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
-    eval_images = np.reshape(eval_images, (-1, 28*28))
+    eval_images = np.reshape(eval_images, (-1, 28*28))/255
     eval_labels = extract_labels('t10k-labels-idx1-ubyte.gz')
     predictions = model.predict(eval_images)
 
