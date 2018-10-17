@@ -59,13 +59,13 @@ class SingleLayerNN:
     batch_size = 128
     num_of_epochs = 10
 
-    def __init__(self, input_size, output_size, number_of_data_points):
-        self.input_size = input_size
-        self.output_size = output_size
+    def __init__(self, number_of_inputs, number_of_outputs, number_of_data_points):
+        self.number_of_inputs = number_of_inputs
+        self.number_of_outputs = number_of_outputs
         self.number_of_data_points = number_of_data_points
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
-        self.weights = 2 * self.init_scale * np.random.rand(input_size, output_size) - self.init_scale
+        self.weights = 2 * self.init_scale * np.random.rand(number_of_inputs, number_of_outputs) - self.init_scale
 
     def _feed(self, X):
         return softmax(np.dot(X, self.weights))
@@ -79,9 +79,9 @@ class SingleLayerNN:
         return np.dot(np.transpose(X), y_pred-y)
 
     def predict(self, X):
-            return self._feed(X)
+            return np.argmax(self._feed(X), 1)
 
-    def fit(self, X, y):
+    def fit(self, X, y, X_valid, y_valid):
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             permuted_indices = np.random.permutation(self.number_of_data_points)
@@ -90,9 +90,12 @@ class SingleLayerNN:
                 delta = self._d_cost(X[selected_data_points], y[selected_data_points])
                 self.weights -= delta * self.learning_rate
 
+            validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
+            print(validation_accuracy)
+
 
 def compute_accuracy(predictions, labels):
-    correctly_predicted = np.sum(predictions==eval_labels)
+    correctly_predicted = np.sum(predictions==labels)
     all = labels.shape[0]
     return 100*correctly_predicted/all
 
@@ -102,17 +105,19 @@ if __name__ == "__main__":
     images = np.reshape(images, (-1, 28*28))
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
 
-    training_images = images[0:55_000]
-    training_labels = labels[0:55_000]
+    train_data_size = 55_000
+    training_images = images[:train_data_size]
+    training_labels = labels[:train_data_size]
+    valid_images = images[train_data_size:]
+    valid_labels = labels[train_data_size:]
 
-    model = SingleLayerNN(28*28, 10, 55_000)
-    model.fit(training_images, training_labels)
+    model = SingleLayerNN(28*28, 10, train_data_size)
+    model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
     eval_images = np.reshape(eval_images, (-1, 28*28))
     eval_labels = extract_labels('t10k-labels-idx1-ubyte.gz')
     predictions = model.predict(eval_images)
-    predictions = np.argmax(predictions, 1)
 
     print(compute_accuracy(predictions, eval_labels))
 
