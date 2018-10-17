@@ -70,7 +70,7 @@ class SingleLayerNN:
     def _feed(self, X):
         return softmax(np.dot(X, self.weights))
 
-    def _cost(self, X, y):
+    def _cost(self, X, y): # think about it!
         y_pred = self._feed(X)
         return -np.mean(np.dot(y, np.log(y_pred)))
 
@@ -90,8 +90,11 @@ class SingleLayerNN:
                 delta = self._d_cost(X[selected_data_points], y[selected_data_points])
                 self.weights -= delta * self.learning_rate
 
+            training_accuracy = compute_accuracy(self.predict(X), np.argmax(y, 1))
             validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
-            print(validation_accuracy)
+
+            print("training accuracy: " + str(round(training_accuracy, 2)))
+            print("validation accuracy: " + str(validation_accuracy))
 
 
 def compute_accuracy(predictions, labels):
