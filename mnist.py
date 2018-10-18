@@ -27,7 +27,7 @@ class SingleLayerNN:
 
     def _d_cost(self, X, y):
         y_pred = self._feed(X)
-        return np.dot(np.transpose(X), y_pred-y), np.mean(y_pred-y, axis=0)
+        return np.dot(np.transpose(X), y_pred-y)/X.shape[0], np.mean(y_pred-y, axis=0)
 
     def predict(self, X):
         return np.argmax(self._feed(X), 1)
@@ -62,8 +62,13 @@ def compute_accuracy(predictions, labels):
     return 100*correctly_predicted/all
 
 
-def train_validation_split(images, labels, train_data_size):
-    return images[:train_data_size], labels[:train_data_size], images[train_data_size:], labels[train_data_size:]
+def train_validation_split(X, y, training_set_size):
+    return X[:training_set_size], y[:training_set_size], X[training_set_size:], y[training_set_size:]
+
+
+def shuffle(X, y):
+    randomize = np.random.permutation(X.shape[0])
+    return X[randomize], y[randomize]
 
 
 if __name__ == "__main__":
@@ -71,19 +76,19 @@ if __name__ == "__main__":
     images = np.reshape(images, (-1, 28*28))/255
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
 
-    randomize = np.random.permutation(images.shape[0])
-    images = images[randomize]
-    labels = labels[randomize]
+    images, labels = shuffle(images, labels)
 
-    train_data_size = 55_000
-    training_images, training_labels, valid_images, valid_labels = train_validation_split(images, labels, train_data_size)
+    training_set_size = 55_000
+    training_images, training_labels, valid_images, valid_labels \
+        = train_validation_split(images, labels, training_set_size)
 
-    model = SingleLayerNN(28*28, 10, train_data_size)
+    model = SingleLayerNN(28*28, 10, training_set_size)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
     eval_images = np.reshape(eval_images, (-1, 28*28))/255
     eval_labels = extract_labels('t10k-labels-idx1-ubyte.gz')
+
     predictions = model.predict(eval_images)
 
     print(compute_accuracy(predictions, eval_labels))
