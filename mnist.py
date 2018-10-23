@@ -1,13 +1,17 @@
-import numpy as np
+import autograd.numpy as np
+
+from autograd import grad
 from extract_data import extract_images, extract_labels
 from plotting import plot_confusion_matrices
+from scipy.special import logsumexp
 from sklearn.utils.extmath import softmax
+np.set_printoptions(suppress=True)
 
 
 class SingleLayerNN:
     init_scale = 0.05
     learning_rate = 0.1
-    batch_size = 10
+    batch_size = 3
     num_of_epochs = 20
 
     def __init__(self, number_of_inputs, number_of_outputs, number_of_data_points):
@@ -25,9 +29,20 @@ class SingleLayerNN:
     def _feed(self, X):
         return softmax(np.dot(X, self.weights) + self.bias)
 
+    def _cost(self, X, y):
+        z = np.dot(X, self.weights) + self.bias
+        # print(np.log(self._feed(X)))
+        # print(z - logsumexp(z, axis=1, keepdims=True))
+        # print(y)
+        # print(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))
+        return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
+
     def _d_cost(self, X, y):
         y_pred = self._feed(X)
         return np.dot(np.transpose(X), y_pred-y)/X.shape[0], np.mean(y_pred-y, axis=0)
+
+    # def _d_cost(self, X, y):
+    #     return grad(self._cost, 2)(X, y, self.weights)
 
     def predict(self, X):
         return np.argmax(self._feed(X), 1)
@@ -47,6 +62,8 @@ class SingleLayerNN:
 
             print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(validation_accuracy))
+
+            print("cost: " + str(self._cost(X, y)))
 
             if self.validation_accuracy < validation_accuracy:
                 self.validation_accuracy = validation_accuracy
