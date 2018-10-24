@@ -1,8 +1,8 @@
 import autograd.numpy as np
 
 from autograd import grad
+from autograd.scipy.misc import logsumexp
 from extract_data import extract_images, extract_labels
-from helper import logsumexp
 from plotting import plot_confusion_matrices
 from sklearn.utils.extmath import softmax
 np.set_printoptions(suppress=True)
