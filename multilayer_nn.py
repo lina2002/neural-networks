@@ -62,7 +62,7 @@ class MultiLayerNN:
             validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
 
             print("training accuracy: " + str(round(training_accuracy, 2)))
-            print("validation accuracy: " + str(validation_accuracy))
+            print("validation accuracy: " + str(round(validation_accuracy, 2)))
 
             print("cost: " + str(self._cost(X, y, self.weights)))
 

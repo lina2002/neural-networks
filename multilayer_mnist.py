@@ -29,6 +29,6 @@ if __name__ == "__main__":
 
     predictions = model.predict(eval_images)
 
-    print(compute_accuracy(predictions, eval_labels))
+    print("test accuracy: " + str(round(compute_accuracy(predictions, eval_labels), 2)))
 
     plot_confusion_matrices(eval_labels, predictions, classes=range(10))
