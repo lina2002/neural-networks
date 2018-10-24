@@ -15,10 +15,9 @@ class SingleLayerNN:
     batch_size = 10
     num_of_epochs = 20
 
-    def __init__(self, number_of_inputs, number_of_outputs, number_of_data_points):
+    def __init__(self, number_of_inputs, number_of_outputs):
         self.number_of_inputs = number_of_inputs
         self.number_of_outputs = number_of_outputs
-        self.number_of_data_points = number_of_data_points
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = 2*self.init_scale*np.random.rand(number_of_inputs, number_of_outputs) - self.init_scale
@@ -46,8 +45,8 @@ class SingleLayerNN:
     def fit(self, X, y, X_valid, y_valid):
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
-            permuted_indices = np.random.permutation(self.number_of_data_points)
-            for i in range(0, self.number_of_data_points, self.batch_size):
+            permuted_indices = np.random.permutation(X.shape[0])
+            for i in range(0, X.shape[0], self.batch_size):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
                 delta_w = self._d_cost(X[selected_data_points], y[selected_data_points], self.weights)
                 self.weights -= delta_w * self.learning_rate
@@ -94,7 +93,7 @@ if __name__ == "__main__":
     training_images, training_labels, valid_images, valid_labels \
         = train_validation_split(images, labels, training_set_size)
 
-    model = SingleLayerNN(28*28, 10, training_set_size)
+    model = SingleLayerNN(28*28, 10)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
