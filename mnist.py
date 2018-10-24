@@ -5,6 +5,9 @@ from autograd.scipy.misc import logsumexp
 from extract_data import extract_images, extract_labels
 from plotting import plot_confusion_matrices
 from sklearn.utils.extmath import softmax
+
+from utils import shuffle, train_validation_split
+
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)
 
@@ -71,15 +74,6 @@ def compute_accuracy(predictions, labels):
     correctly_predicted = np.sum(predictions == labels)
     all = labels.shape[0]
     return 100*correctly_predicted/all
-
-
-def train_validation_split(X, y, training_set_size):
-    return X[:training_set_size], y[:training_set_size], X[training_set_size:], y[training_set_size:]
-
-
-def shuffle(X, y):
-    randomize = np.random.permutation(X.shape[0])
-    return X[randomize], y[randomize]
 
 
 if __name__ == "__main__":

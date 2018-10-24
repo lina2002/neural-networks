@@ -3,18 +3,10 @@ import autograd.numpy as np
 from extract_data import extract_images, extract_labels
 from multilayer_nn import compute_accuracy, MultiLayerNN
 from plotting import plot_confusion_matrices
+from utils import shuffle, train_validation_split
 
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)
-
-
-def shuffle(X, y):
-    randomize = np.random.permutation(X.shape[0])
-    return X[randomize], y[randomize]
-
-
-def train_validation_split(X, y, training_set_size):
-    return X[:training_set_size], y[:training_set_size], X[training_set_size:], y[training_set_size:]
 
 
 if __name__ == "__main__":
