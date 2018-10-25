@@ -25,7 +25,7 @@ class MultiLayerNN:
             self.weights.append(w)
             self.weights.append(alpha)
             self.weights.append(beta)
-        self.weights = self.weights[:-1]
+        self.weights = self.weights[:-2]
 
         self.ema_weights = copy.deepcopy(self.weights)
 
