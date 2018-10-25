@@ -1,4 +1,5 @@
 import autograd.numpy as np
+import copy
 
 from autograd import grad
 from autograd.scipy.misc import logsumexp
@@ -8,11 +9,12 @@ from sklearn.utils.extmath import softmax
 class MultiLayerNN:
     init_scale = 0.05
     learning_rate = 0.1
-    batch_size = 64
-    num_of_epochs = 20
+    batch_size = 32
+    num_of_epochs = 2
 
-    def __init__(self, sizes, keep_prob):
+    def __init__(self, sizes, keep_prob, ema):
         self.keep_prob = keep_prob
+        self.ema = ema
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = []
@@ -20,12 +22,14 @@ class MultiLayerNN:
             w = 2*self.init_scale*np.random.rand(s1, s2) - self.init_scale
             self.weights.append(w)
 
-        self.validation_accuracy = 0
-        self.old_weights = self.weights
+        self.ema_weights = copy.deepcopy(self.weights)
 
-    def _feed(self, X):
-        z = np.dot(X, self.weights[0])
-        for w in self.weights[1:]:
+        # self.validation_accuracy = 0
+        # self.old_weights = self.weights
+
+    def _feed(self, X, weights):
+        z = np.dot(X, weights[0])
+        for w in weights[1:]:
             a = relu(z)
             z = np.dot(a, w)
         return softmax(z)
@@ -45,8 +49,10 @@ class MultiLayerNN:
     def _d_cost(self, X, y, weights):
         return grad(self._cost, 2)(X, y, weights)
 
-    def predict(self, X):
-        return np.argmax(self._feed(X), 1)
+    def predict(self, X, weights=None):
+        if weights is None:
+            weights = self.ema_weights
+        return np.argmax(self._feed(X, weights), 1)
 
     def fit(self, X, y, X_valid, y_valid):
         for epoch in range(self.num_of_epochs):
@@ -57,20 +63,28 @@ class MultiLayerNN:
                 delta_w = self._d_cost(X[selected_data_points], y[selected_data_points], self.weights)
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
+                for i in range(len(self.weights)):
+                    self.ema_weights[i] = self.ema_weights[i]*self.ema + self.weights[i]*(1-self.ema)
 
-            training_accuracy = compute_accuracy(self.predict(X), np.argmax(y, 1))
-            validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
+            training_accuracy = compute_accuracy(self.predict(X, self.weights), np.argmax(y, 1))
+            validation_accuracy = compute_accuracy(self.predict(X_valid, self.weights), np.argmax(y_valid, 1))
 
             print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
 
             print("cost: " + str(self._cost(X, y, self.weights)))
 
-            if self.validation_accuracy < validation_accuracy:
-                self.validation_accuracy = validation_accuracy
-                self.old_weights = self.weights
-            else:
-                self.weights = self.old_weights
+            training_accuracy = compute_accuracy(self.predict(X, self.ema_weights), np.argmax(y, 1))
+            validation_accuracy = compute_accuracy(self.predict(X_valid, self.ema_weights), np.argmax(y_valid, 1))
+
+            print("training accuracy ema: " + str(round(training_accuracy, 2)))
+            print("validation accuracy ema: " + str(round(validation_accuracy, 2)))
+
+            # if self.validation_accuracy < validation_accuracy:
+            #     self.validation_accuracy = validation_accuracy
+            #     self.old_weights = self.weights
+            # else:
+            #     self.weights = self.old_weights
             #     self.learning_rate = 0.5*self.learning_rate
 
 
