@@ -1,0 +1,62 @@
+(50000, 32, 32, 3) (50000, 1) (10000, 32, 32, 3) (10000, 1)
+epoch number: 1
+training accuracy: 45.64
+validation accuracy: 44.02
+cost: 1.5337789780399769
+training accuracy ema: 47.52
+validation accuracy ema: 46.08
+epoch number: 2
+training accuracy: 51.35
+validation accuracy: 49.3
+cost: 1.418218340081101
+training accuracy ema: 51.95
+validation accuracy ema: 50.02
+epoch number: 3
+training accuracy: 52.54
+validation accuracy: 49.66
+cost: 1.371277484115542
+training accuracy ema: 54.48
+validation accuracy ema: 52.3
+epoch number: 4
+training accuracy: 54.52
+validation accuracy: 51.28
+cost: 1.3275274875854692
+training accuracy ema: 56.59
+validation accuracy ema: 53.52
+epoch number: 5
+training accuracy: 56.68
+validation accuracy: 52.94
+cost: 1.2853853963695292
+training accuracy ema: 58.46
+validation accuracy ema: 54.74
+epoch number: 6
+training accuracy: 57.62
+validation accuracy: 53.22
+cost: 1.2565966895880356
+training accuracy ema: 59.81
+validation accuracy ema: 55.38
+epoch number: 7
+training accuracy: 58.42
+validation accuracy: 53.28
+cost: 1.2372980709898609
+training accuracy ema: 61.02
+validation accuracy ema: 55.9
+epoch number: 8
+training accuracy: 60.7
+validation accuracy: 54.32
+cost: 1.1894837421896671
+training accuracy ema: 61.81
+validation accuracy ema: 56.08
+epoch number: 9
+training accuracy: 61.6
+validation accuracy: 54.34
+cost: 1.1740393258732447
+training accuracy ema: 62.98
+validation accuracy ema: 56.2
+epoch number: 10
+training accuracy: 62.16
+validation accuracy: 54.7
+cost: 1.1574056400974873
+training accuracy ema: 63.8
+validation accuracy ema: 56.46
+test accuracy: 55.44
