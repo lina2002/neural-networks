@@ -14,7 +14,6 @@ class MultiLayerNN:
         self.learning_rate = learning_rate
         self.keep_prob = keep_prob
         self.ema = ema
-        self.averages = []
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = []
@@ -86,15 +85,11 @@ class MultiLayerNN:
 
     def batch_normalization(self, x, alpha, beta):
         epsilon = 0.000001
-        # self.averages.append(x.mean(axis=0))
         x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
         return np.multiply(x_n, (alpha + 1)) + beta
 
     def test_batch_normalization(self, x):
-        return x - self.average_of_averages()
-
-    def average_of_averages(self):
-        return np.mean(self.averages, axis=0)
+        pass
 
 
 def compute_accuracy(predictions, labels):
