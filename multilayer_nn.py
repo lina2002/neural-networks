@@ -30,14 +30,14 @@ class MultiLayerNN:
 
     def _feed(self, X, weights):
         z = np.dot(X, weights[0])
-        for w in weights[3::2]:
+        for w in weights[3::3]:
             a = relu(z)
             z = np.dot(a, w)
         return softmax(z)
 
     def _cost(self, X, y, weights):
         z = np.dot(X, weights[0])
-        for alpha, beta, w in zip(weights[1::2], weights[2::2], weights[3::2]):
+        for alpha, beta, w in zip(weights[1::3], weights[2::3], weights[3::3]):
             a = batch_normalization(z, alpha, beta)
             a_r = relu(a)
             a_d = dropout(a_r, self.keep_prob)
@@ -98,6 +98,5 @@ def dropout(x, keep_prob):
 def batch_normalization(x, alpha, beta):
     epsilon = 0.000001
     x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
-    x_n = x_n*(alpha + 1) + beta
-    return x_n
+    return np.multiply(x_n, (alpha + 1)) + beta
 
