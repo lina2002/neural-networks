@@ -21,7 +21,7 @@ if __name__ == "__main__":
         = train_validation_split(images, labels, training_set_size)
 
     params = {'batch_size': 64,
-              'num_of_epochs': 10,
+              'num_of_epochs': 20,
               'learning_rate': 0.1,
               'init_scale': 0.05,
               'keep_prob': 0.9,

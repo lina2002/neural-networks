@@ -1,0 +1,125 @@
+Extracting train-images-idx3-ubyte.gz
+Extracting train-labels-idx1-ubyte.gz
+epoch number: 1
+training accuracy: 97.07
+validation accuracy: 95.88
+cost: 0.11051322659926661
+training accuracy ema: 95.31
+validation accuracy ema: 94.06
+epoch number: 2
+training accuracy: 98.23
+validation accuracy: 97.24
+cost: 0.07045034367371057
+training accuracy ema: 97.61
+validation accuracy ema: 96.54
+epoch number: 3
+training accuracy: 98.73
+validation accuracy: 97.44
+cost: 0.05305661170524964
+training accuracy ema: 98.51
+validation accuracy ema: 97.32
+epoch number: 4
+training accuracy: 99.17
+validation accuracy: 97.72
+cost: 0.03958004590491499
+training accuracy ema: 99.02
+validation accuracy ema: 97.52
+epoch number: 5
+training accuracy: 99.45
+validation accuracy: 97.68
+cost: 0.03114875764470627
+training accuracy ema: 99.34
+validation accuracy ema: 97.72
+epoch number: 6
+training accuracy: 99.56
+validation accuracy: 97.84
+cost: 0.024842750757783177
+training accuracy ema: 99.58
+validation accuracy ema: 97.92
+epoch number: 7
+training accuracy: 99.71
+validation accuracy: 97.86
+cost: 0.020488446293765332
+training accuracy ema: 99.72
+validation accuracy ema: 97.98
+epoch number: 8
+training accuracy: 99.76
+validation accuracy: 97.82
+cost: 0.017647520486322243
+training accuracy ema: 99.81
+validation accuracy ema: 98.04
+epoch number: 9
+training accuracy: 99.83
+validation accuracy: 97.88
+cost: 0.014934220539320916
+training accuracy ema: 99.88
+validation accuracy ema: 98.1
+epoch number: 10
+training accuracy: 99.9
+validation accuracy: 97.94
+cost: 0.012240304978586155
+training accuracy ema: 99.93
+validation accuracy ema: 98.1
+epoch number: 11
+training accuracy: 99.91
+validation accuracy: 97.96
+cost: 0.011415912448567102
+training accuracy ema: 99.95
+validation accuracy ema: 98.2
+epoch number: 12
+training accuracy: 99.93
+validation accuracy: 97.9
+cost: 0.009717720277468693
+training accuracy ema: 99.96
+validation accuracy ema: 98.16
+epoch number: 13
+training accuracy: 99.94
+validation accuracy: 97.98
+cost: 0.00955427072131366
+training accuracy ema: 99.98
+validation accuracy ema: 98.2
+epoch number: 14
+training accuracy: 99.95
+validation accuracy: 97.86
+cost: 0.00862708253588781
+training accuracy ema: 99.98
+validation accuracy ema: 98.22
+epoch number: 15
+training accuracy: 99.98
+validation accuracy: 98.26
+cost: 0.007090690029657438
+training accuracy ema: 99.99
+validation accuracy ema: 98.18
+epoch number: 16
+training accuracy: 99.95
+validation accuracy: 98.2
+cost: 0.006966601949370709
+training accuracy ema: 99.99
+validation accuracy ema: 98.18
+epoch number: 17
+training accuracy: 99.99
+validation accuracy: 97.9
+cost: 0.006221235551183617
+training accuracy ema: 100.0
+validation accuracy ema: 98.2
+epoch number: 18
+training accuracy: 99.99
+validation accuracy: 98.14
+cost: 0.00503922319246622
+training accuracy ema: 100.0
+validation accuracy ema: 98.24
+epoch number: 19
+training accuracy: 99.99
+validation accuracy: 98.14
+cost: 0.004554093669518551
+training accuracy ema: 100.0
+validation accuracy ema: 98.24
+epoch number: 20
+training accuracy: 100.0
+validation accuracy: 97.98
+cost: 0.00427953731241391
+training accuracy ema: 100.0
+validation accuracy ema: 98.28
+Extracting t10k-images-idx3-ubyte.gz
+Extracting t10k-labels-idx1-ubyte.gz
+test accuracy: 98.42
