@@ -23,9 +23,6 @@ class MultiLayerNN:
 
         self.ema_weights = copy.deepcopy(self.weights)
 
-        # self.validation_accuracy = 0
-        # self.old_weights = self.weights
-
     def _feed(self, X, weights):
         z = np.dot(X, weights[0])
         for w in weights[1:]:
@@ -78,13 +75,6 @@ class MultiLayerNN:
 
             print("training accuracy ema: " + str(round(training_accuracy, 2)))
             print("validation accuracy ema: " + str(round(validation_accuracy, 2)))
-
-            # if self.validation_accuracy < validation_accuracy:
-            #     self.validation_accuracy = validation_accuracy
-            #     self.old_weights = self.weights
-            # else:
-            #     self.weights = self.old_weights
-            #     self.learning_rate = 0.5*self.learning_rate
 
 
 def compute_accuracy(predictions, labels):
