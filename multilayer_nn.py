@@ -14,6 +14,7 @@ class MultiLayerNN:
         self.learning_rate = learning_rate
         self.keep_prob = keep_prob
         self.ema = ema
+        self.averages = []
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = []
@@ -30,15 +31,20 @@ class MultiLayerNN:
 
     def _feed(self, X, weights):
         z = np.dot(X, weights[0])
-        for w in weights[3::3]:
-            a = relu(z)
-            z = np.dot(a, w)
+        # for w in weights[3::3]:
+        #     a = self.test_batch_normalization(z)
+        #     a_r = relu(a)
+        #     z = np.dot(a_r, w)
+        for alpha, beta, w in zip(weights[1::3], weights[2::3], weights[3::3]):
+            a = self.batch_normalization(z, alpha, beta)
+            a_r = relu(a)
+            z = np.dot(a_r, w)
         return softmax(z)
 
     def _cost(self, X, y, weights):
         z = np.dot(X, weights[0])
         for alpha, beta, w in zip(weights[1::3], weights[2::3], weights[3::3]):
-            a = batch_normalization(z, alpha, beta)
+            a = self.batch_normalization(z, alpha, beta)
             a_r = relu(a)
             a_d = dropout(a_r, self.keep_prob)
             z = np.dot(a_d, w)
@@ -78,6 +84,18 @@ class MultiLayerNN:
             print("training accuracy ema: " + str(round(training_accuracy, 2)))
             print("validation accuracy ema: " + str(round(validation_accuracy, 2)))
 
+    def batch_normalization(self, x, alpha, beta):
+        epsilon = 0.000001
+        # self.averages.append(x.mean(axis=0))
+        x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
+        return np.multiply(x_n, (alpha + 1)) + beta
+
+    def test_batch_normalization(self, x):
+        return x - self.average_of_averages()
+
+    def average_of_averages(self):
+        return np.mean(self.averages, axis=0)
+
 
 def compute_accuracy(predictions, labels):
     correctly_predicted = np.sum(predictions == labels)
@@ -93,10 +111,3 @@ def dropout(x, keep_prob):
     rand = np.random.rand(*x.shape)
     to_keep = rand < keep_prob
     return np.multiply(x, to_keep)/keep_prob
-
-
-def batch_normalization(x, alpha, beta):
-    epsilon = 0.000001
-    x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
-    return np.multiply(x_n, (alpha + 1)) + beta
-
