@@ -36,10 +36,6 @@ class MultiLayerNN:
             a = relu(z)
             a_d = dropout(a, self.keep_prob)
             z = np.dot(a_d, w)
-        # print(np.log(self._feed(X)))
-        # print(z - logsumexp(z, axis=1, keepdims=True))
-        # print(y)
-        # print(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))
         return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
 
     def _d_cost(self, X, y, weights):
