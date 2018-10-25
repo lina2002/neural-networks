@@ -20,7 +20,13 @@ if __name__ == "__main__":
 
     x_train, y_train, x_valid, y_valid = train_validation_split(x_train, y_train, training_set_size=45_000)
 
-    model = MultiLayerNN([32*32*3, 100, 100, 10], 0.9, 0.999)
+    params = {'batch_size': 32,
+              'num_of_epochs': 10,
+              'learning_rate': 0.1,
+              'init_scale': 0.05,
+              'keep_prob': 0.9,
+              'ema': 0.999}
+    model = MultiLayerNN([32*32*3, 100, 100, 10], **params)
     model.fit(x_train, y_train, x_valid, y_valid)
 
     predictions = model.predict(x_test)

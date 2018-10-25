@@ -7,19 +7,18 @@ from sklearn.utils.extmath import softmax
 
 
 class MultiLayerNN:
-    init_scale = 0.05
-    learning_rate = 0.1
-    batch_size = 32
-    num_of_epochs = 2
 
-    def __init__(self, sizes, keep_prob, ema):
+    def __init__(self, sizes, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob, ema):
+        self.batch_size = batch_size
+        self.num_of_epochs = num_of_epochs
+        self.learning_rate = learning_rate
         self.keep_prob = keep_prob
         self.ema = ema
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = []
         for s1, s2 in zip(sizes[:-1], sizes[1:]):
-            w = 2*self.init_scale*np.random.rand(s1, s2) - self.init_scale
+            w = 2*init_scale*np.random.rand(s1, s2) - init_scale
             self.weights.append(w)
 
         self.ema_weights = copy.deepcopy(self.weights)

@@ -20,7 +20,13 @@ if __name__ == "__main__":
     training_images, training_labels, valid_images, valid_labels \
         = train_validation_split(images, labels, training_set_size)
 
-    model = MultiLayerNN([28*28, 500, 10], 0.9, 0.999)
+    params = {'batch_size': 64,
+              'num_of_epochs': 10,
+              'learning_rate': 0.1,
+              'init_scale': 0.05,
+              'keep_prob': 0.9,
+              'ema': 0.999}
+    model = MultiLayerNN([28*28, 500, 10], **params)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
