@@ -19,9 +19,6 @@ class SingleLayerNN:
     num_of_epochs = 20
 
     def __init__(self, number_of_inputs, number_of_outputs):
-        self.number_of_inputs = number_of_inputs
-        self.number_of_outputs = number_of_outputs
-
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = 2*self.init_scale*np.random.rand(number_of_inputs, number_of_outputs) - self.init_scale
 
