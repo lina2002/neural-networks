@@ -19,22 +19,26 @@ class MultiLayerNN:
         self.weights = []
         for s1, s2 in zip(sizes[:-1], sizes[1:]):
             w = 2*init_scale*np.random.rand(s1, s2) - init_scale
+            beta = 2*init_scale*np.random.rand(s2) - init_scale
             self.weights.append(w)
+            self.weights.append(beta)
+        self.weights = self.weights[:-1]
 
         self.ema_weights = copy.deepcopy(self.weights)
 
     def _feed(self, X, weights):
         z = np.dot(X, weights[0])
-        for w in weights[1:]:
+        for w in weights[2::2]:
             a = relu(z)
             z = np.dot(a, w)
         return softmax(z)
 
     def _cost(self, X, y, weights):
         z = np.dot(X, weights[0])
-        for w in weights[1:]:
-            a = relu(z)
-            a_d = dropout(a, self.keep_prob)
+        for beta, w in zip(weights[1::2], weights[2::2]):
+            a = batch_normalization(z, beta)
+            a_r = relu(a)
+            a_d = dropout(a_r, self.keep_prob)
             z = np.dot(a_d, w)
         return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
 
@@ -87,4 +91,11 @@ def dropout(x, keep_prob):
     rand = np.random.rand(*x.shape)
     to_keep = rand < keep_prob
     return np.multiply(x, to_keep)/keep_prob
+
+
+def batch_normalization(x, beta):
+    epsilon = 0.000001
+    x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
+    x_n = x_n + beta
+    return x_n
 
