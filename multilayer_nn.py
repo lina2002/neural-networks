@@ -11,31 +11,31 @@ class MultiLayerNN:
     batch_size = 64
     num_of_epochs = 20
 
-    def __init__(self, number_of_inputs, number_of_outputs, hidden_layer_size, keep_prob):
-        self.number_of_inputs = number_of_inputs
-        self.number_of_outputs = number_of_outputs
-        self.hidden_layer_size = hidden_layer_size
+    def __init__(self, sizes, keep_prob):
         self.keep_prob = keep_prob
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
-        w0 = 2*self.init_scale*np.random.rand(number_of_inputs, hidden_layer_size) - self.init_scale
-        w1 = 2*self.init_scale*np.random.rand(hidden_layer_size, number_of_outputs) - self.init_scale
-        self.weights = [w0, w1]
+        self.weights = []
+        for s1, s2 in zip(sizes[:-1], sizes[1:]):
+            w = 2*self.init_scale*np.random.rand(s1, s2) - self.init_scale
+            self.weights.append(w)
 
         self.validation_accuracy = 0
         self.old_weights = self.weights
 
     def _feed(self, X):
-        z1 = np.dot(X, self.weights[0])
-        a1 = relu(z1)
-        z = np.dot(a1, self.weights[1])
+        z = np.dot(X, self.weights[0])
+        for w in self.weights[1:]:
+            a = relu(z)
+            z = np.dot(a, w)
         return softmax(z)
 
     def _cost(self, X, y, weights):
-        z1 = np.dot(X, weights[0])
-        a1 = relu(z1)
-        a1_d = dropout(a1, self.keep_prob)
-        z = np.dot(a1_d, weights[1])
+        z = np.dot(X, weights[0])
+        for w in weights[1:]:
+            a = relu(z)
+            a_d = dropout(a, self.keep_prob)
+            z = np.dot(a_d, w)
         # print(np.log(self._feed(X)))
         # print(z - logsumexp(z, axis=1, keepdims=True))
         # print(y)

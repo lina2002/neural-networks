@@ -20,7 +20,7 @@ if __name__ == "__main__":
     training_images, training_labels, valid_images, valid_labels \
         = train_validation_split(images, labels, training_set_size)
 
-    model = MultiLayerNN(28*28, 10, 500, 0.9)
+    model = MultiLayerNN([28*28, 500, 10], 0.9)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
