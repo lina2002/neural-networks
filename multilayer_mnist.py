@@ -33,6 +33,10 @@ if __name__ == "__main__":
     eval_images = np.reshape(eval_images, (-1, 28*28))/255
     eval_labels = extract_labels('t10k-labels-idx1-ubyte.gz')
 
+    predictions = model.predict(eval_images, test=True)
+
+    print("test accuracy: " + str(round(compute_accuracy(predictions, eval_labels), 2)))
+
     predictions = model.predict(eval_images)
 
     print("test accuracy: " + str(round(compute_accuracy(predictions, eval_labels), 2)))

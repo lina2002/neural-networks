@@ -14,6 +14,8 @@ class MultiLayerNN:
         self.learning_rate = learning_rate
         self.keep_prob = keep_prob
         self.ema = ema
+        self.stds = []
+        self.averages = []
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
         self.weights = []
@@ -28,14 +30,26 @@ class MultiLayerNN:
 
         self.ema_weights = copy.deepcopy(self.weights)
 
-    def _feed(self, X, weights):
+    def _feed(self, X, weights, test=False):
         z = np.dot(X, weights[0])
-        # for w in weights[3::3]:
-        #     a = self.test_batch_normalization(z)
-        #     a_r = relu(a)
-        #     z = np.dot(a_r, w)
-        for alpha, beta, w in zip(weights[1::3], weights[2::3], weights[3::3]):
-            a = self.batch_normalization(z, alpha, beta)
+        if test:
+            stds = self.stds
+            averages = self.averages
+        else:
+            stds = weights[1::3]
+            averages = weights[2::3]
+        for alpha, beta, w in zip(stds, averages, weights[3::3]):
+            a = batch_normalization(z, alpha, beta)
+            a_r = relu(a)
+            z = np.dot(a_r, w)
+        return softmax(z)
+
+    def _compute_stds_and_averages(self, X, weights):
+        z = np.dot(X, weights[0])
+        stds = weights[1::3]
+        averages = weights[2::3]
+        for alpha, beta, w in zip(stds, averages, weights[3::3]):
+            a = self.saving_batch_normalization(z, alpha, beta)
             a_r = relu(a)
             z = np.dot(a_r, w)
         return softmax(z)
@@ -43,7 +57,7 @@ class MultiLayerNN:
     def _cost(self, X, y, weights):
         z = np.dot(X, weights[0])
         for alpha, beta, w in zip(weights[1::3], weights[2::3], weights[3::3]):
-            a = self.batch_normalization(z, alpha, beta)
+            a = batch_normalization(z, alpha, beta)
             a_r = relu(a)
             a_d = dropout(a_r, self.keep_prob)
             z = np.dot(a_d, w)
@@ -52,10 +66,10 @@ class MultiLayerNN:
     def _d_cost(self, X, y, weights):
         return grad(self._cost, 2)(X, y, weights)
 
-    def predict(self, X, weights=None):
+    def predict(self, X, weights=None, test=False):
         if weights is None:
             weights = self.ema_weights
-        return np.argmax(self._feed(X, weights), 1)
+        return np.argmax(self._feed(X, weights, test), 1)
 
     def fit(self, X, y, X_valid, y_valid):
         for epoch in range(self.num_of_epochs):
@@ -83,13 +97,23 @@ class MultiLayerNN:
             print("training accuracy ema: " + str(round(training_accuracy, 2)))
             print("validation accuracy ema: " + str(round(validation_accuracy, 2)))
 
-    def batch_normalization(self, x, alpha, beta):
+            self.save_average_and_std(X)
+
+    def saving_batch_normalization(self, x, alpha, beta):
         epsilon = 0.000001
+        self.averages.append(x.mean(axis=0))
+        self.stds.append(x.std(axis=0))
         x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
         return np.multiply(x_n, (alpha + 1)) + beta
 
-    def test_batch_normalization(self, x):
-        pass
+    def save_average_and_std(self, X):
+        self._compute_stds_and_averages(X, self.ema_weights)
+
+
+def batch_normalization(x, alpha, beta):
+    epsilon = 0.000001
+    x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
+    return np.multiply(x_n, (alpha + 1)) + beta
 
 
 def compute_accuracy(predictions, labels):

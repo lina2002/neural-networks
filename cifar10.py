@@ -29,7 +29,7 @@ if __name__ == "__main__":
     model = MultiLayerNN([32*32*3, 100, 100, 10], **params)
     model.fit(x_train, y_train, x_valid, y_valid)
 
-    predictions = model.predict(x_test)
+    predictions = model.predict(x_test, test=True)
 
     print("test accuracy: " + str(round(compute_accuracy(predictions, y_test), 2)))
 
