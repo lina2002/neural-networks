@@ -8,3 +8,9 @@ def shuffle(X, y):
 
 def train_validation_split(X, y, training_set_size):
     return X[:training_set_size], y[:training_set_size], X[training_set_size:], y[training_set_size:]
+
+
+def compute_accuracy(predictions, labels):
+    correctly_predicted = np.sum(predictions == labels)
+    all = labels.shape[0]
+    return 100*correctly_predicted/all

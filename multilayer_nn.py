@@ -5,6 +5,8 @@ from autograd import grad
 from autograd.scipy.misc import logsumexp
 from sklearn.utils.extmath import softmax
 
+from utils import compute_accuracy
+
 
 class MultiLayerNN:
 
@@ -114,12 +116,6 @@ def batch_normalization(x, alpha, beta):
     epsilon = 0.000001
     x_n = (x - x.mean(axis=0))/(x.std(axis=0) + epsilon)
     return np.multiply(x_n, (alpha + 1)) + beta
-
-
-def compute_accuracy(predictions, labels):
-    correctly_predicted = np.sum(predictions == labels)
-    all = labels.shape[0]
-    return 100*correctly_predicted/all
 
 
 def relu(x):

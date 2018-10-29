@@ -1,9 +1,9 @@
 import autograd.numpy as np
 
 from extract_data import extract_images, extract_labels
-from multilayer_nn import compute_accuracy, MultiLayerNN
+from multilayer_nn import MultiLayerNN
 from plotting import plot_confusion_matrices
-from utils import shuffle, train_validation_split
+from utils import shuffle, train_validation_split, compute_accuracy
 
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)

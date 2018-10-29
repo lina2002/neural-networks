@@ -2,9 +2,9 @@ import autograd.numpy as np
 import tensorflow as tf
 
 from extract_data import dense_to_one_hot
-from multilayer_nn import MultiLayerNN, compute_accuracy
+from multilayer_nn import MultiLayerNN
 from plotting import plot_confusion_matrices
-from utils import train_validation_split
+from utils import train_validation_split, compute_accuracy
 
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)

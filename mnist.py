@@ -6,7 +6,7 @@ from extract_data import extract_images, extract_labels
 from plotting import plot_confusion_matrices
 from sklearn.utils.extmath import softmax
 
-from utils import shuffle, train_validation_split
+from utils import shuffle, train_validation_split, compute_accuracy
 
 np.set_printoptions(suppress=True)
 np.set_printoptions(threshold=np.nan)
@@ -65,12 +65,6 @@ class SingleLayerNN:
             else:
                 self.weights = self.old_weights
                 self.learning_rate = 0.5*self.learning_rate
-
-
-def compute_accuracy(predictions, labels):
-    correctly_predicted = np.sum(predictions == labels)
-    all = labels.shape[0]
-    return 100*correctly_predicted/all
 
 
 if __name__ == "__main__":
