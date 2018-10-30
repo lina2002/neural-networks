@@ -22,9 +22,11 @@ class ConvolutionalNN:
 
     def _feed(self, X, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
-        m = maxout(c)
+        r = relu(c)
+        m = maxout(r)
         c = convolve(m, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
-        m = maxout(c)
+        r = relu(c)
+        m = maxout(r)
         m = np.reshape(m, (X.shape[0], -1))
         z = np.dot(m, weights[2])
         return softmax(z)
@@ -34,9 +36,11 @@ class ConvolutionalNN:
 
     def _cost(self, X, y, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
-        m = maxout(c)
+        r = relu(c)
+        m = maxout(r)
         c = convolve(m, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
-        m = maxout(c)
+        r = relu(c)
+        m = maxout(r)
         m = np.reshape(m, (X.shape[0], -1))
         z = np.dot(m, weights[2])
         return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
@@ -66,3 +70,13 @@ class ConvolutionalNN:
 def maxout(x):
     y = np.reshape(x, [x.shape[0], x.shape[1], x.shape[2]//2, 2, x.shape[3]//2, 2])
     return np.max(y, axis=(3, 5))
+
+
+def relu(x):
+    return np.maximum(x, 0)
+
+
+def dropout(x, keep_prob):
+    rand = np.random.rand(*x.shape)
+    to_keep = rand < keep_prob
+    return np.multiply(x, to_keep)/keep_prob
