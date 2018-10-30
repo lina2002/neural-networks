@@ -1,4 +1,3 @@
-import skimage
 from autograd import numpy as np, grad
 from autograd.scipy.misc import logsumexp
 from autograd.scipy.signal import convolve
@@ -46,13 +45,10 @@ class ConvolutionalNN:
             permuted_indices = np.random.permutation(X.shape[0])
             for i in range(0, X.shape[0], self.batch_size):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
-                print(self.weights[0][0])
                 delta_w = self._d_cost(X[selected_data_points], y[selected_data_points], self.weights)
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
 
-            print('epoch')
-            print(self.weights[0][0])
             training_accuracy = compute_accuracy(self.predict(X), np.argmax(y, 1))
             validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
 
@@ -61,20 +57,6 @@ class ConvolutionalNN:
 
             print("cost: " + str(self._cost(X, y, self.weights)))
 
-
-# def maxout(a):
-#     return a[:13, :13]
-#     # return skimage.measure.block_reduce(a, (2,2), np.max)
-
-# def maxout(tab):
-#     print(tab.shape)
-#     new_tab = np.zeros((tab.shape[0]//2, tab.shape[1]//2))
-#     for i in range(tab.shape[0]):
-#         for j in range(tab.shape[1]):
-#             # print(np.max(tab[2*i:2*i+2,2*j:2*j+2]))
-#             new_tab[i, j] = np.max(tab[2*i:2*i+2,2*j:2*j+2])
-#     print(new_tab.shape)
-#     return new_tab
 
 def maxout(x):
     y = np.reshape(x, [x.shape[0], x.shape[1], x.shape[2]//2, 2, x.shape[3]//2, 2])
