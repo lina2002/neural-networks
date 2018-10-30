@@ -12,7 +12,7 @@ np.set_printoptions(threshold=np.nan)
 
 if __name__ == "__main__":
     images = extract_images('train-images-idx3-ubyte.gz')
-    images = np.squeeze(images)
+    images = np.squeeze(images)/255
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
 
     images, labels = shuffle(images, labels)
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
-    eval_images = np.reshape(eval_images, (-1, 28*28))/255
+    eval_images = np.reshape(eval_images, (-1, 28*28))/255 #???
     eval_labels = extract_labels('t10k-labels-idx1-ubyte.gz')
 
     predictions = model.predict(eval_images)
