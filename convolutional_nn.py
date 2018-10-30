@@ -17,13 +17,16 @@ class ConvolutionalNN:
         N = 8
         self.weights = []
         self.weights.append(2*init_scale*np.random.rand(N, 3, 3) - init_scale)
-        self.weights.append(2*init_scale*np.random.rand(8*13*13, 10) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(2*N, N, 4, 4) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(2*N*5*5, 10) - init_scale)
 
     def _feed(self, X, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
         m = maxout(c)
+        c = convolve(m, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
+        m = maxout(c)
         m = np.reshape(m, (X.shape[0], -1))
-        z = np.dot(m, weights[1])
+        z = np.dot(m, weights[2])
         return softmax(z)
 
     def predict(self, X):
@@ -32,8 +35,10 @@ class ConvolutionalNN:
     def _cost(self, X, y, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
         m = maxout(c)
+        c = convolve(m, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
+        m = maxout(c)
         m = np.reshape(m, (X.shape[0], -1))
-        z = np.dot(m, weights[1])
+        z = np.dot(m, weights[2])
         return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
 
     def _d_cost(self, X, y, weights):
