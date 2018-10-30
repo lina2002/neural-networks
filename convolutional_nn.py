@@ -22,12 +22,10 @@ class ConvolutionalNN:
 
     def _feed(self, X, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
-        m = np.zeros((c.shape[0], c.shape[1], c.shape[2]//2, c.shape[3]//2))
-        print(c.shape)
         for i in range(c.shape[0]):
             for j in range(c.shape[1]):
-                copy(maxout(c[i, j]), m[i, j])
-        m = np.reshape(m, (self.batch_size, -1))
+                c[i, j] = maxout(c[i, j])
+        m = np.reshape(m, (self.X.shape[0], -1))
         z = np.dot(m, weights[1])
         return softmax(z)
 
@@ -36,10 +34,9 @@ class ConvolutionalNN:
 
     def _cost(self, X, y, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
-        m = np.zeros([c.shape[0], c.shape[1], c.shape[2]//2, c.shape[3]//2])
         for i in range(c.shape[0]):
             for j in range(c.shape[1]):
-                copy(maxout(c[i, j]), m[i, j])
+                c[i, j] = maxout(c[i, j])
         m = np.reshape(m, (self.X.shape[0], -1))
         z = np.dot(m, weights[1])
         return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
@@ -66,12 +63,16 @@ class ConvolutionalNN:
             print("cost: " + str(self._cost(X, y, self.weights)))
 
 
-def maxout(a):
-    return a[:13, :13]
-    # return skimage.measure.block_reduce(a, (2,2), np.max)
+# def maxout(a):
+#     return a[:13, :13]
+#     # return skimage.measure.block_reduce(a, (2,2), np.max)
 
-
-def copy(a_from, a_to):
-    for i in range(a_from.shape[0]):
-        for j in range(a_from.shape[1]):
-            a_to[i, j] = a_from[i, j]
+def maxout(tab):
+    print(tab.shape)
+    new_tab = np.zeros((tab.shape[0]//2, tab.shape[1]//2))
+    for i in range(tab.shape[0]):
+        for j in range(tab.shape[1]):
+            # print(np.max(tab[2*i:2*i+2,2*j:2*j+2]))
+            new_tab[i, j] = np.max(tab[2*i:2*i+2,2*j:2*j+2])
+    print(new_tab.shape)
+    return new_tab
