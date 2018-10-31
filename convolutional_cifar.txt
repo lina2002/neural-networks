@@ -1,0 +1,46 @@
+(50000, 32, 32, 3) (50000, 1) (10000, 32, 32, 3) (10000, 1)
+  0%|          | 0/1407 [00:00<?, ?it/s]epoch number: 1
+/Users/agnieszka.paszek/venv/tcs-ml/lib/python3.6/site-packages/autograd/scipy/signal.py:41: FutureWarning: Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result either in an error or a different result.
+  A_view = A[flipped_idxs]
+/Users/agnieszka.paszek/venv/tcs-ml/lib/python3.6/site-packages/autograd/scipy/signal.py:129: FutureWarning: Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result either in an error or a different result.
+  result = convolve(g, Y[flipped_idxs(Y.ndim, axes[_Y_]['conv'])],
+100%|██████████| 1407/1407 [07:06<00:00,  3.35it/s]
+training accuracy: 52.98
+  2%|▏         | 33/1407 [00:10<06:55,  3.30it/s]validation accuracy: 52.76
+epoch number: 2
+100%|██████████| 1407/1407 [07:22<00:00,  3.34it/s]
+  0%|          | 2/1407 [00:00<08:05,  2.90it/s]training accuracy: 57.96
+validation accuracy: 57.68
+epoch number: 3
+100%|██████████| 1407/1407 [07:11<00:00,  3.25it/s]
+training accuracy: 57.25
+validation accuracy: 57.2
+epoch number: 4
+100%|██████████| 1407/1407 [07:15<00:00,  3.39it/s]
+  4%|▎         | 50/1407 [00:15<06:45,  3.34it/s]training accuracy: 58.62
+validation accuracy: 58.4
+epoch number: 5
+100%|██████████| 1407/1407 [06:58<00:00,  3.35it/s]
+  2%|▏         | 34/1407 [00:10<06:51,  3.34it/s]training accuracy: 59.96
+validation accuracy: 59.38
+epoch number: 6
+100%|██████████| 1407/1407 [07:04<00:00,  3.34it/s]
+training accuracy: 59.45
+validation accuracy: 58.44
+epoch number: 7
+100%|██████████| 1407/1407 [07:01<00:00,  3.35it/s]
+  4%|▎         | 52/1407 [00:15<06:45,  3.34it/s]training accuracy: 60.34
+validation accuracy: 60.22
+epoch number: 8
+100%|██████████| 1407/1407 [07:01<00:00,  3.30it/s]
+training accuracy: 60.54
+  3%|▎         | 37/1407 [00:11<06:52,  3.32it/s]validation accuracy: 59.66
+epoch number: 9
+100%|██████████| 1407/1407 [07:01<00:00,  3.39it/s]
+training accuracy: 60.59
+validation accuracy: 58.86
+epoch number: 10
+100%|██████████| 1407/1407 [06:55<00:00,  3.40it/s]
+training accuracy: 61.07
+validation accuracy: 60.74
+test accuracy: 58.81
