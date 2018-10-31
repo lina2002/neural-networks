@@ -20,13 +20,19 @@ class ConvolutionalNN:
         self.weights.append(2*init_scale*np.random.rand(N, 3, 3) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(2*N, N, 4, 4) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(2*N*5*5, 10) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(1, N, 1, 1) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(1, N, 1, 1) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(1, 2*N, 1, 1) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(1, 2*N, 1, 1) - init_scale)
 
     def _feed(self, X, weights):
         c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
-        r = relu(c)
+        n = batch_normalization(c, weights[3], weights[4])
+        r = relu(n)
         m = maxout(r)
         c = convolve(m, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
-        r = relu(c)
+        n = batch_normalization(c, weights[5], weights[6])
+        r = relu(n)
         m = maxout(r)
         m = np.reshape(m, (X.shape[0], -1))
         z = np.dot(m, weights[2])
@@ -37,12 +43,14 @@ class ConvolutionalNN:
 
     def _cost(self, X, y, weights):
         d = dropout(X, self.keep_prob)
-        c = convolve(d, weights[0], mode='valid', axes=([1, 2], [1, 2]))
-        r = relu(c)
+        c = convolve(d, weights[0], mode='valid', axes=([1, 2], [1, 2])) # [batch_size, N, 26, 26]
+        n = batch_normalization(c, weights[3], weights[4])
+        r = relu(n)
         m = maxout(r)
         d = dropout(m, self.keep_prob)
-        c = convolve(d, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
-        r = relu(c)
+        c = convolve(d, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1])) # [batch_size, 2N, 10, 10]
+        n = batch_normalization(c, weights[5], weights[6])
+        r = relu(n)
         m = maxout(r)
         m = np.reshape(m, (X.shape[0], -1))
         d = dropout(m, self.keep_prob)
@@ -84,3 +92,9 @@ def dropout(x, keep_prob):
     rand = np.random.rand(*x.shape)
     to_keep = rand < keep_prob
     return np.multiply(x, to_keep)/keep_prob
+
+
+def batch_normalization(x, alpha, beta):
+    epsilon = 0.000001
+    x_n = (x - x.mean(axis=(0, 2, 3), keepdims=True))/(x.std(axis=(0, 2, 3), keepdims=True) + epsilon)
+    return np.multiply(x_n, (alpha + 1)) + beta

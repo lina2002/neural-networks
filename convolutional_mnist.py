@@ -11,7 +11,7 @@ np.set_printoptions(threshold=np.nan)
 
 
 if __name__ == "__main__":
-    print("DROPOUT 2")
+    print("BATCH NORMALIZATION")
     images = extract_images('train-images-idx3-ubyte.gz')
     images = np.squeeze(images)/255
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
