@@ -7,12 +7,13 @@ from utils import compute_accuracy
 
 
 class ConvolutionalNN:
-    def __init__(self, output_size, batch_size, num_of_epochs, learning_rate, init_scale):
+    def __init__(self, output_size, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob):
         self.output_size = output_size
         self.batch_size = batch_size
         self.num_of_epochs = num_of_epochs
         self.learning_rate = learning_rate
         self.init_scale = init_scale
+        self.keep_prob = keep_prob
 
         N = 8
         self.weights = []
@@ -35,14 +36,17 @@ class ConvolutionalNN:
         return np.argmax(self._feed(X, self.weights), 1)
 
     def _cost(self, X, y, weights):
-        c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
+        d = dropout(X, self.keep_prob)
+        c = convolve(d, weights[0], mode='valid', axes=([1, 2], [1, 2]))
         r = relu(c)
         m = maxout(r)
-        c = convolve(m, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
+        d = dropout(m, self.keep_prob)
+        c = convolve(d, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1]))
         r = relu(c)
         m = maxout(r)
         m = np.reshape(m, (X.shape[0], -1))
-        z = np.dot(m, weights[2])
+        d = dropout(m, self.keep_prob)
+        z = np.dot(d, weights[2])
         return -np.sum(np.sum((z - logsumexp(z, axis=1, keepdims=True))*y, axis=1))/X.shape[0]
 
     def _d_cost(self, X, y, weights):
@@ -64,7 +68,7 @@ class ConvolutionalNN:
             print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
 
-            print("cost: " + str(self._cost(X, y, self.weights)))
+            # print("cost: " + str(self._cost(X, y, self.weights)))
 
 
 def maxout(x):

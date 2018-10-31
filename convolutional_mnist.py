@@ -11,6 +11,7 @@ np.set_printoptions(threshold=np.nan)
 
 
 if __name__ == "__main__":
+    print("DROPOUT 2")
     images = extract_images('train-images-idx3-ubyte.gz')
     images = np.squeeze(images)/255
     labels = extract_labels('train-labels-idx1-ubyte.gz', one_hot=True)
@@ -24,7 +25,8 @@ if __name__ == "__main__":
     params = {'batch_size': 64,
               'num_of_epochs': 20,
               'learning_rate': 0.1,
-              'init_scale': 0.05}
+              'init_scale': 0.05,
+              'keep_prob': 0.9}
     model = ConvolutionalNN(10, **params)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
