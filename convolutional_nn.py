@@ -2,6 +2,7 @@ from autograd import numpy as np, grad
 from autograd.scipy.misc import logsumexp
 from autograd.scipy.signal import convolve
 from sklearn.utils.extmath import softmax
+from tqdm import tqdm
 
 from utils import compute_accuracy
 
@@ -17,16 +18,16 @@ class ConvolutionalNN:
 
         N = 8
         self.weights = []
-        self.weights.append(2*init_scale*np.random.rand(N, 3, 3) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(N, 3, 3, 3) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(2*N, N, 4, 4) - init_scale)
-        self.weights.append(2*init_scale*np.random.rand(2*N*5*5, 10) - init_scale)
+        self.weights.append(2*init_scale*np.random.rand(2*N*6*6, 10) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(1, N, 1, 1) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(1, N, 1, 1) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(1, 2*N, 1, 1) - init_scale)
         self.weights.append(2*init_scale*np.random.rand(1, 2*N, 1, 1) - init_scale)
 
     def _feed(self, X, weights):
-        c = convolve(X, weights[0], mode='valid', axes=([1, 2], [1, 2]))
+        c = convolve(X, weights[0], mode='valid', axes=([1, 2], [2, 3]), dot_axes=([3], [1]))
         n = batch_normalization(c, weights[3], weights[4])
         r = relu(n)
         m = maxout(r)
@@ -43,12 +44,12 @@ class ConvolutionalNN:
 
     def _cost(self, X, y, weights):
         d = dropout(X, self.keep_prob)
-        c = convolve(d, weights[0], mode='valid', axes=([1, 2], [1, 2])) # [batch_size, N, 26, 26]
+        c = convolve(d, weights[0], mode='valid', axes=([1, 2], [2, 3]), dot_axes=([3], [1])) # [batch_size, N, 30, 30]
         n = batch_normalization(c, weights[3], weights[4])
         r = relu(n)
         m = maxout(r)
         d = dropout(m, self.keep_prob)
-        c = convolve(d, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1])) # [batch_size, 2N, 10, 10]
+        c = convolve(d, weights[1], mode='valid', axes=([2, 3], [2, 3]), dot_axes=([1], [1])) # [batch_size, 2N, 12, 12]
         n = batch_normalization(c, weights[5], weights[6])
         r = relu(n)
         m = maxout(r)
@@ -64,7 +65,7 @@ class ConvolutionalNN:
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             permuted_indices = np.random.permutation(X.shape[0])
-            for i in range(0, X.shape[0], self.batch_size):
+            for i in tqdm(range(0, X.shape[0], self.batch_size)):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
                 delta_w = self._d_cost(X[selected_data_points], y[selected_data_points], self.weights)
                 for w, d in zip(self.weights, delta_w):
