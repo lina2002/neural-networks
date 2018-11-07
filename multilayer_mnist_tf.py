@@ -16,10 +16,10 @@ if __name__ == "__main__":
         = train_validation_split(images, labels, training_set_size)
 
     params = {'batch_size': 64,
-              'num_of_epochs': 20,
+              'num_of_epochs': 40,
               'learning_rate': 0.1,
               'init_scale': 0.05,
-              'keep_prob': 0.9}
+              'keep_prob': 0.75}
     model = MultiLayerNN([28*28, 500, 10], **params)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
