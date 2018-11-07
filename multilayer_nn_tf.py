@@ -4,6 +4,9 @@ import tensorflow as tf
 from utils import compute_accuracy
 
 
+logs_path = "./logs/visualize_graph"
+
+
 class MultiLayerNN:
 
     def __init__(self, sizes, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob):
@@ -30,6 +33,7 @@ class MultiLayerNN:
         self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
+        self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
 
     def predict(self, X):
         return np.argmax(self.y_pred.eval({self.X: X}), 1)
@@ -48,3 +52,10 @@ class MultiLayerNN:
 
             print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
+
+            summary = tf.Summary(value=[tf.Summary.Value(tag="training accuracy",
+                                                         simple_value=training_accuracy)])
+            self.writer.add_summary(summary, epoch)
+            summary = tf.Summary(value=[tf.Summary.Value(tag="validation accuracy",
+                                                         simple_value=validation_accuracy)])
+            self.writer.add_summary(summary, epoch)
