@@ -15,11 +15,11 @@ if __name__ == "__main__":
 
     x_train, y_train, x_valid, y_valid = train_validation_split(x_train, y_train, training_set_size=45_000)
 
-    params = {'batch_size': 64,
+    params = {'batch_size': 128,
               'num_of_epochs': 100,
               'learning_rate': 0.1,
               'init_scale': 0.05,
-              'keep_prob': 0.65}
+              'keep_prob': 0.6}
     model = MultiLayerNN([32*32*3, 500, 10], **params)
     model.fit(x_train, y_train, x_valid, y_valid)
 
