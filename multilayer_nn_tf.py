@@ -10,7 +10,7 @@ logs_path = "./logs/visualize_graph"
 
 class MultiLayerNN:
 
-    def __init__(self, sizes, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob):
+    def __init__(self, sizes, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob, ema):
         self.batch_size = batch_size
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
@@ -27,7 +27,7 @@ class MultiLayerNN:
         self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
         self.bn_params = {
             'is_training': self.is_training,
-            'decay': 0.999,
+            'decay': ema,
             'updates_collections': None
         }
         z = tf.matmul(self.X, weights[0])

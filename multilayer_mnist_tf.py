@@ -19,7 +19,8 @@ if __name__ == "__main__":
               'num_of_epochs': 40,
               'learning_rate': 0.1,
               'init_scale': 0.05,
-              'keep_prob': 0.75}
+              'keep_prob': 0.75,
+              'ema': 0.999}
     model = MultiLayerNN([28*28, 500, 10], **params)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
