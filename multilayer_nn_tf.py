@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+from tensorflow.contrib.layers import batch_norm
 
 from utils import compute_accuracy
 
@@ -23,9 +24,16 @@ class MultiLayerNN:
         self.X = tf.placeholder(tf.float32, [None, sizes[0]])
         self.y = tf.placeholder(tf.float32, [None, sizes[-1]])
         self.prob = tf.placeholder_with_default(1.0, shape=())
+        self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
+        self.bn_params = {
+            'is_training': self.is_training,
+            'decay': 0.999,
+            'updates_collections': None
+        }
         z = tf.matmul(self.X, weights[0])
         for w in weights[1:]:
-            z_r = tf.nn.relu(z)
+            z_n = batch_norm(z, **self.bn_params)
+            z_r = tf.nn.relu(z_n)
             z_d = tf.nn.dropout(z_r, self.prob)
             z = tf.matmul(z_d, w)
         self.y_pred = tf.nn.softmax(z)
@@ -45,7 +53,8 @@ class MultiLayerNN:
             for i in range(0, X_train.shape[0], self.batch_size):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
                 self.sess.run(self.optimizer, {self.X: X_train[selected_data_points],
-                                               self.y: y_train[selected_data_points], self.prob: self.keep_prob})
+                                               self.y: y_train[selected_data_points], self.prob: self.keep_prob,
+                                               self.is_training: True})
 
             training_accuracy = compute_accuracy(self.predict(X_train), np.argmax(y_train, 1))
             validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
