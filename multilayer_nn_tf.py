@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
+from tqdm import tqdm
 
 from utils import compute_accuracy
 
@@ -15,14 +16,10 @@ class MultiLayerNN:
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
 
-        # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
-        # weights = []
-        # for s1, s2 in zip(sizes[:-1], sizes[1:]):
-        #     w = tf.Variable(tf.random_uniform([s1, s2], minval=-init_scale, maxval=init_scale))
-        #     weights.append(w)
-        N = 8
+        N = 16
         weights = []
         weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, N, N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([32*32*N, 10], minval=-init_scale, maxval=init_scale)))
 
         self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
@@ -38,21 +35,27 @@ class MultiLayerNN:
         c = tf.nn.conv2d(d, weights[0], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, N]
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
-        r = tf.reshape(r, (-1, 32*32*N))  # [batch_size, 32*32*N]
-        z = tf.matmul(r, weights[1])
+
+        to_add = r
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, weights[1], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        a = tf.add_n([r, to_add])
 
         # m = tf.nn.max_pool(r, ksize=[], strides=[], padding="SAME")  # [batch_size, 15, 15, N]
 
-        # z = tf.matmul(self.X, weights[0])
-        # for w in weights[1:]:
-        #     z_n = batch_norm(z, **self.bn_params)
-        #     z_r = tf.nn.relu(z_n)
-        #     z_d = tf.nn.dropout(z_r, self.prob)
-        #     z = tf.matmul(z_d, w)
+        a = tf.reshape(a, (-1, 32*32*N))  # [batch_size, 32*32*N]
+        z = tf.matmul(a, weights[2])
+
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
-        self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
+        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
+        with tf.control_dependencies(update_ops):
+            self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
         self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
@@ -64,7 +67,7 @@ class MultiLayerNN:
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             permuted_indices = np.random.permutation(X_train.shape[0])
-            for i in range(0, X_train.shape[0], self.batch_size):
+            for i in tqdm(range(0, X_train.shape[0], self.batch_size)):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
                 self.sess.run(self.optimizer, {self.X: X_train[selected_data_points],
                                                self.y: y_train[selected_data_points], self.prob: self.keep_prob,
