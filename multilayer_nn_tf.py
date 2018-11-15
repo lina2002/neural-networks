@@ -10,19 +10,23 @@ logs_path = "./logs/visualize_graph"
 
 class MultiLayerNN:
 
-    def __init__(self, sizes, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob, ema):
+    def __init__(self, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob, ema):
         self.batch_size = batch_size
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
 
         # this will populate weights using numbers from range [-init_scale, init_scale) with uniform distribution
+        # weights = []
+        # for s1, s2 in zip(sizes[:-1], sizes[1:]):
+        #     w = tf.Variable(tf.random_uniform([s1, s2], minval=-init_scale, maxval=init_scale))
+        #     weights.append(w)
+        N = 8
         weights = []
-        for s1, s2 in zip(sizes[:-1], sizes[1:]):
-            w = tf.Variable(tf.random_uniform([s1, s2], minval=-init_scale, maxval=init_scale))
-            weights.append(w)
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([32*32*N, 10], minval=-init_scale, maxval=init_scale)))
 
-        self.X = tf.placeholder(tf.float32, [None, sizes[0]])
-        self.y = tf.placeholder(tf.float32, [None, sizes[-1]])
+        self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+        self.y = tf.placeholder(tf.float32, [None, 10])
         self.prob = tf.placeholder_with_default(1.0, shape=())
         self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
         self.bn_params = {
@@ -30,12 +34,22 @@ class MultiLayerNN:
             'decay': ema,
             'updates_collections': None
         }
-        z = tf.matmul(self.X, weights[0])
-        for w in weights[1:]:
-            z_n = batch_norm(z, **self.bn_params)
-            z_r = tf.nn.relu(z_n)
-            z_d = tf.nn.dropout(z_r, self.prob)
-            z = tf.matmul(z_d, w)
+        d = tf.nn.dropout(self.X, self.prob)
+        c = tf.nn.conv2d(d, weights[0], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+        r = tf.reshape(r, (-1, 32*32*N))  # [batch_size, 32*32*N]
+        z = tf.matmul(r, weights[1])
+
+        # m = tf.nn.max_pool(r, ksize=[], strides=[], padding="SAME")  # [batch_size, 15, 15, N]
+
+        # z = tf.matmul(self.X, weights[0])
+        # for w in weights[1:]:
+        #     z_n = batch_norm(z, **self.bn_params)
+        #     z_r = tf.nn.relu(z_n)
+        #     z_d = tf.nn.dropout(z_r, self.prob)
+        #     z = tf.matmul(z_d, w)
+
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
         self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
