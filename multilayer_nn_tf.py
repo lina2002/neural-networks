@@ -52,7 +52,7 @@ class MultiLayerNN:
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
-        self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
+        self.optimizer = tf.train.AdamOptimizer().minimize(cross_entropy)
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
         self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
