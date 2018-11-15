@@ -20,7 +20,7 @@ class MultiLayerNN:
         weights = []
         weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, N, N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([32*32*N, 10], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([16*16*N, 10], minval=-init_scale, maxval=init_scale)))
 
         self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
         self.y = tf.placeholder(tf.float32, [None, 10])
@@ -45,17 +45,14 @@ class MultiLayerNN:
 
         a = tf.add_n([r, to_add])
 
-        # m = tf.nn.max_pool(r, ksize=[], strides=[], padding="SAME")  # [batch_size, 15, 15, N]
+        m = tf.layers.max_pooling2d(a, pool_size=[2, 2], strides=[2, 2], padding="SAME")  # [batch_size, 16, 16, N]
 
-        a = tf.reshape(a, (-1, 32*32*N))  # [batch_size, 32*32*N]
-        z = tf.matmul(a, weights[2])
-
+        m = tf.reshape(m, (-1, 16*16*N))  # [batch_size, 16*16*N]
+        z = tf.matmul(m, weights[2])
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
-        update_ops = tf.get_collection(tf.GraphKeys.UPDATE_OPS)
-        with tf.control_dependencies(update_ops):
-            self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
+        self.optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cross_entropy)
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
         self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
