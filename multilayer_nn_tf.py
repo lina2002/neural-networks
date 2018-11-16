@@ -9,6 +9,9 @@ from utils import compute_accuracy
 logs_path = "./logs/visualize_graph"
 
 
+logs_path = "./logs/visualize_graph"
+
+
 class MultiLayerNN:
 
     def __init__(self, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob, ema):
@@ -16,10 +19,12 @@ class MultiLayerNN:
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
 
-        N = 16
+        N = 52
         weights = []
         weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
@@ -73,11 +78,24 @@ class MultiLayerNN:
         r = tf.nn.relu(n)
 
         r = tf.add_n([r, to_add])
+        to_add = r
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, weights[6], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, weights[7], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        r = tf.add_n([r, to_add])
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")  # [batch_size, 8, 8, 2N]
 
         m = tf.reshape(m, (-1, 8*8*2*N))  # [batch_size, 16*16*N]
-        z = tf.matmul(m, weights[6])
+        z = tf.matmul(m, weights[8])
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
