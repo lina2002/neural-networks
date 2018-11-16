@@ -118,7 +118,11 @@ class MultiLayerNN:
                                                self.is_training: True})
 
             # training_accuracy = compute_accuracy(self.predict(X_train), np.argmax(y_train, 1))
-            validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
+            validation_summary = []
+            for i in range(0, X_valid.shape[0], self.batch_size):
+                validation_summary = np.append(validation_summary, self.predict(X_valid[i:(i+self.batch_size)]))
+
+            validation_accuracy = compute_accuracy(validation_summary, np.argmax(y_valid, 1))
 
             # print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
