@@ -19,8 +19,12 @@ class MultiLayerNN:
         N = 16
         weights = []
         weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, N, N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([16*16*N, 10], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
+        weights.append(tf.Variable(tf.random_uniform([8*8*2*N, 10], minval=-init_scale, maxval=init_scale)))
 
         self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
         self.y = tf.placeholder(tf.float32, [None, 10])
@@ -36,19 +40,44 @@ class MultiLayerNN:
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
-        to_add = r
-
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[1], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, N]
+        c = tf.nn.conv2d(d, weights[1], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, 2N]
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
-        a = tf.add_n([r, to_add])
+        m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
-        m = tf.layers.max_pooling2d(a, pool_size=[2, 2], strides=[2, 2], padding="SAME")  # [batch_size, 16, 16, N]
+        to_add = m
 
-        m = tf.reshape(m, (-1, 16*16*N))  # [batch_size, 16*16*N]
-        z = tf.matmul(m, weights[2])
+        d = tf.nn.dropout(m, self.prob)
+        c = tf.nn.conv2d(d, weights[2], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, weights[3], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        r = tf.add_n([r, to_add])
+        to_add = r
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, weights[4], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, weights[5], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        r = tf.add_n([r, to_add])
+
+        m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")  # [batch_size, 8, 8, 2N]
+
+        m = tf.reshape(m, (-1, 8*8*2*N))  # [batch_size, 16*16*N]
+        z = tf.matmul(m, weights[6])
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
@@ -70,15 +99,15 @@ class MultiLayerNN:
                                                self.y: y_train[selected_data_points], self.prob: self.keep_prob,
                                                self.is_training: True})
 
-            training_accuracy = compute_accuracy(self.predict(X_train), np.argmax(y_train, 1))
+            # training_accuracy = compute_accuracy(self.predict(X_train), np.argmax(y_train, 1))
             validation_accuracy = compute_accuracy(self.predict(X_valid), np.argmax(y_valid, 1))
 
-            print("training accuracy: " + str(round(training_accuracy, 2)))
+            # print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
 
-            summary = tf.Summary(value=[tf.Summary.Value(tag="training accuracy",
-                                                         simple_value=training_accuracy)])
-            self.writer.add_summary(summary, epoch)
+            # summary = tf.Summary(value=[tf.Summary.Value(tag="training accuracy",
+            #                                              simple_value=training_accuracy)])
+            # self.writer.add_summary(summary, epoch)
             summary = tf.Summary(value=[tf.Summary.Value(tag="validation accuracy",
                                                          simple_value=validation_accuracy)])
             self.writer.add_summary(summary, epoch)
