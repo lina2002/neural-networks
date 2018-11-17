@@ -9,9 +9,6 @@ from utils import compute_accuracy
 logs_path = "./logs/visualize_graph"
 
 
-logs_path = "./logs/visualize_graph"
-
-
 class MultiLayerNN:
 
     def __init__(self, batch_size, num_of_epochs, learning_rate, init_scale, keep_prob, ema):
@@ -19,7 +16,7 @@ class MultiLayerNN:
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
 
-        N = 52
+        N = 128
         weights = []
         weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale)))
@@ -55,12 +52,12 @@ class MultiLayerNN:
         to_add = m
 
         d = tf.nn.dropout(m, self.prob)
-        c = tf.nn.conv2d(d, weights[2], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        c = tf.nn.conv2d(d, weights[2], strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[3], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        c = tf.nn.conv2d(d, weights[3], strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
@@ -68,12 +65,12 @@ class MultiLayerNN:
         to_add = r
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[4], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        c = tf.nn.conv2d(d, weights[4], strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[5], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        c = tf.nn.conv2d(d, weights[5], strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
@@ -81,20 +78,20 @@ class MultiLayerNN:
         to_add = r
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[6], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        c = tf.nn.conv2d(d, weights[6], strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[7], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 16, 16, 2N]
+        c = tf.nn.conv2d(d, weights[7], strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         r = tf.add_n([r, to_add])
 
-        m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")  # [batch_size, 8, 8, 2N]
+        m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
-        m = tf.reshape(m, (-1, 8*8*2*N))  # [batch_size, 16*16*N]
+        m = tf.reshape(m, (-1, 8*8*2*N))
         z = tf.matmul(m, weights[8])
 
         self.y_pred = tf.nn.softmax(z)
