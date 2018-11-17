@@ -22,11 +22,7 @@ if __name__ == "__main__":
     model = MultiLayerNN(**params)
     model.fit(x_train, y_train, x_valid, y_valid)
 
-    predictions = model.get_predictions(x_test)
-
-    print("test accuracy: " + str(round(compute_accuracy(predictions, y_test), 2)))
-
     model.restore_the_best()
     predictions = model.get_predictions(x_test)
 
-    print("test accuracy, best model: " + str(round(compute_accuracy(predictions, y_test), 2)))
+    print("test accuracy: " + str(round(compute_accuracy(predictions, y_test), 2)))
