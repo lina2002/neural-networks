@@ -49,45 +49,9 @@ class MultiLayerNN:
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
-        to_add = m
-
-        d = tf.nn.dropout(m, self.prob)
-        c = tf.nn.conv2d(d, weights[2], strides=[1, 1, 1, 1], padding="SAME")
-        n = batch_norm(c, **self.bn_params)
-        r = tf.nn.relu(n)
-
-        d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[3], strides=[1, 1, 1, 1], padding="SAME")
-        n = batch_norm(c, **self.bn_params)
-        r = tf.nn.relu(n)
-
-        r = tf.add_n([r, to_add])
-        to_add = r
-
-        d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[4], strides=[1, 1, 1, 1], padding="SAME")
-        n = batch_norm(c, **self.bn_params)
-        r = tf.nn.relu(n)
-
-        d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[5], strides=[1, 1, 1, 1], padding="SAME")
-        n = batch_norm(c, **self.bn_params)
-        r = tf.nn.relu(n)
-
-        r = tf.add_n([r, to_add])
-        to_add = r
-
-        d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[6], strides=[1, 1, 1, 1], padding="SAME")
-        n = batch_norm(c, **self.bn_params)
-        r = tf.nn.relu(n)
-
-        d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[7], strides=[1, 1, 1, 1], padding="SAME")
-        n = batch_norm(c, **self.bn_params)
-        r = tf.nn.relu(n)
-
-        r = tf.add_n([r, to_add])
+        r = self.residual(m, weights[2], weights[3])
+        r = self.residual(r, weights[4], weights[5])
+        r = self.residual(r, weights[6], weights[7])
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
@@ -100,6 +64,20 @@ class MultiLayerNN:
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
         self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
+
+    def residual(self, r, w1, w2):
+        to_add = r
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, w1, strides=[1, 1, 1, 1], padding="SAME")
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, w2, strides=[1, 1, 1, 1], padding="SAME")
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+        r = tf.add_n([r, to_add])
+        return r
 
     def predict(self, X):
         return np.argmax(self.y_pred.eval({self.X: X}), 1)
