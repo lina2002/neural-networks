@@ -88,15 +88,16 @@ class MultiLayerNN:
                                                self.y: y_train[selected_data_points], self.prob: self.keep_prob,
                                                self.is_training: True})
 
-            # training_accuracy = compute_accuracy(self.predict(X_train), np.argmax(y_train, 1))
-            validation_preditions = self.get_predictions(X_valid)
+            training_predictions = self.get_predictions(X_train)
+            training_accuracy = compute_accuracy(training_predictions, np.argmax(y_train, 1))
 
+            validation_preditions = self.get_predictions(X_valid)
             validation_accuracy = compute_accuracy(validation_preditions, np.argmax(y_valid, 1))
             if validation_accuracy > best_validation_accuracy:
                 best_validation_accuracy = validation_accuracy
                 self.saver.save(sess=self.sess, save_path=self.save_dir + "best_model")
 
-            # print("training accuracy: " + str(round(training_accuracy, 2)))
+            print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
 
             # summary = tf.Summary(value=[tf.Summary.Value(tag="training accuracy",
