@@ -17,18 +17,8 @@ class MultiLayerNN:
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
 
-        N = 112
-        weights = []
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale)))
-        weights.append(tf.Variable(tf.random_uniform([8*8*2*N, 10], minval=-init_scale, maxval=init_scale)))
-
+        N = 128
+        weights = WeightsGenerator(N, init_scale)
         self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
         self.y = tf.placeholder(tf.float32, [None, 10])
         self.prob = tf.placeholder_with_default(1.0, shape=())
@@ -39,25 +29,25 @@ class MultiLayerNN:
             'updates_collections': None
         }
         d = tf.nn.dropout(self.X, self.prob)
-        c = tf.nn.conv2d(d, weights[0], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, N]
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, N]
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, weights[1], strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, 2N]
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")  # [batch_size, 32, 32, 2N]
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
-        r = self.residual(m, weights[2], weights[3])
-        r = self.residual(r, weights[4], weights[5])
-        r = self.residual(r, weights[6], weights[7])
+        r = self.residual(m, weights)
+        # r = self.residual(r, weights)
+        # r = self.residual(r, weights)
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
         m = tf.reshape(m, (-1, 8*8*2*N))
-        z = tf.matmul(m, weights[8])
+        z = tf.matmul(m, next(weights))
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
@@ -70,15 +60,15 @@ class MultiLayerNN:
         if not os.path.exists(self.save_dir):
             os.makedirs(self.save_dir)
 
-    def residual(self, r, w1, w2):
+    def residual(self, r, weights):
         to_add = r
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, w1, strides=[1, 1, 1, 1], padding="SAME")
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
         d = tf.nn.dropout(r, self.prob)
-        c = tf.nn.conv2d(d, w2, strides=[1, 1, 1, 1], padding="SAME")
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
         r = tf.add_n([r, to_add])
@@ -125,3 +115,15 @@ class MultiLayerNN:
         for i in range(0, X.shape[0], self.batch_size):
             preditions = np.append(preditions, self.predict(X[i:(i+self.batch_size)]))
         return preditions
+
+
+def WeightsGenerator(N, init_scale):
+    yield tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([8*8*2*N, 10], minval=-init_scale, maxval=init_scale))
