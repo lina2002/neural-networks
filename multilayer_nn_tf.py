@@ -93,11 +93,9 @@ class MultiLayerNN:
                                                self.is_training: True})
 
             # training_accuracy = compute_accuracy(self.predict(X_train), np.argmax(y_train, 1))
-            validation_summary = []
-            for i in range(0, X_valid.shape[0], self.batch_size):
-                validation_summary = np.append(validation_summary, self.predict(X_valid[i:(i+self.batch_size)]))
+            validation_preditions = self.get_predictions(X_valid)
 
-            validation_accuracy = compute_accuracy(validation_summary, np.argmax(y_valid, 1))
+            validation_accuracy = compute_accuracy(validation_preditions, np.argmax(y_valid, 1))
 
             # print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
@@ -108,3 +106,9 @@ class MultiLayerNN:
             summary = tf.Summary(value=[tf.Summary.Value(tag="validation accuracy",
                                                          simple_value=validation_accuracy)])
             self.writer.add_summary(summary, epoch)
+
+    def get_predictions(self, X):
+        preditions = []
+        for i in range(0, X.shape[0], self.batch_size):
+            preditions = np.append(preditions, self.predict(X[i:(i+self.batch_size)]))
+        return preditions
