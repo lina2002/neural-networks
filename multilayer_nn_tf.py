@@ -1,4 +1,5 @@
 import numpy as np
+import os
 import tensorflow as tf
 from tensorflow.contrib.layers import batch_norm
 from tqdm import tqdm
@@ -16,7 +17,7 @@ class MultiLayerNN:
         self.num_of_epochs = num_of_epochs
         self.keep_prob = keep_prob
 
-        N = 128
+        N = 112
         weights = []
         weights.append(tf.Variable(tf.random_uniform([3, 3, 3, N], minval=-init_scale, maxval=init_scale)))
         weights.append(tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale)))
@@ -64,6 +65,10 @@ class MultiLayerNN:
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
         self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
+        self.saver = tf.train.Saver()
+        self.save_dir = 'saved_models/'
+        if not os.path.exists(self.save_dir):
+            os.makedirs(self.save_dir)
 
     def residual(self, r, w1, w2):
         to_add = r
@@ -83,6 +88,8 @@ class MultiLayerNN:
         return np.argmax(self.y_pred.eval({self.X: X}), 1)
 
     def fit(self, X_train, y_train, X_valid, y_valid):
+        best_validation_accuracy = 0
+
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             permuted_indices = np.random.permutation(X_train.shape[0])
@@ -96,6 +103,9 @@ class MultiLayerNN:
             validation_preditions = self.get_predictions(X_valid)
 
             validation_accuracy = compute_accuracy(validation_preditions, np.argmax(y_valid, 1))
+            if validation_accuracy > best_validation_accuracy:
+                best_validation_accuracy = validation_accuracy
+                self.saver.save(sess=self.sess, save_path=self.save_dir + "best_model")
 
             # print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
@@ -106,6 +116,9 @@ class MultiLayerNN:
             summary = tf.Summary(value=[tf.Summary.Value(tag="validation accuracy",
                                                          simple_value=validation_accuracy)])
             self.writer.add_summary(summary, epoch)
+
+    def restore_the_best(self):
+        self.saver.restore(sess=self.sess, save_path=self.save_dir + "best_model")
 
     def get_predictions(self, X):
         preditions = []
