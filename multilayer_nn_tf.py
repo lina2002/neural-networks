@@ -41,8 +41,7 @@ class MultiLayerNN:
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
         r = self.residual(m, weights)
-        # r = self.residual(r, weights)
-        # r = self.residual(r, weights)
+        r = self.residual(r, weights)
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
@@ -122,8 +121,6 @@ def WeightsGenerator(N, init_scale):
     yield tf.Variable(tf.random_uniform([3, 3, N, 2*N], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
-    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
-    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
-    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
-    # yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([8*8*2*N, 10], minval=-init_scale, maxval=init_scale))
