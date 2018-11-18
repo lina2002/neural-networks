@@ -45,8 +45,13 @@ class MultiLayerNN:
 
         m = tf.layers.max_pooling2d(r, pool_size=[2, 2], strides=[2, 2], padding="SAME")
 
-        m = tf.reshape(m, (-1, 8*8*2*N))
-        z = tf.matmul(m, next(weights))
+        d = tf.nn.dropout(m, self.prob)
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")
+        n = batch_norm(c, **self.bn_params)
+        r = tf.nn.relu(n)
+
+        z = tf.layers.average_pooling2d(r, pool_size=[8, 8], strides=[1, 1], padding="VALID")
+        z = tf.squeeze(z)
 
         self.y_pred = tf.nn.softmax(z)
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=z, labels=self.y))
@@ -124,4 +129,4 @@ def WeightsGenerator(N, init_scale):
     yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 2*N, 2*N], minval=-init_scale, maxval=init_scale))
-    yield tf.Variable(tf.random_uniform([8*8*2*N, 10], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([1, 1, 2*N, 10], minval=-init_scale, maxval=init_scale))
