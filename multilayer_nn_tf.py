@@ -105,9 +105,9 @@ class MultiLayerNN:
             print("training accuracy: " + str(round(training_accuracy, 2)))
             print("validation accuracy: " + str(round(validation_accuracy, 2)))
 
-            # summary = tf.Summary(value=[tf.Summary.Value(tag="training accuracy",
-            #                                              simple_value=training_accuracy)])
-            # self.writer.add_summary(summary, epoch)
+            summary = tf.Summary(value=[tf.Summary.Value(tag="training accuracy",
+                                                         simple_value=training_accuracy)])
+            self.writer.add_summary(summary, epoch)
             summary = tf.Summary(value=[tf.Summary.Value(tag="validation accuracy",
                                                          simple_value=validation_accuracy)])
             self.writer.add_summary(summary, epoch)
