@@ -18,8 +18,9 @@ class Simplicity:
         self.keep_prob = keep_prob
 
         weights = WeightsGenerator(init_scale)
-        self.X_initial = tf.placeholder(tf.float32, [None, 32, 32, 3])
-        self.X = tf.image.random_flip_left_right(self.X_initial)
+        # self.X_initial = tf.placeholder(tf.float32, [None, 32, 32, 3])
+        # self.X = tf.image.random_flip_left_right(self.X_initial)
+        self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
         self.y = tf.placeholder(tf.float32, [None, 10])
         self.prob = tf.placeholder_with_default(1.0, shape=())
         self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
@@ -38,7 +39,12 @@ class Simplicity:
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
-        m = tf.layers.max_pooling2d(r, pool_size=[3, 3], strides=[2, 2], padding="SAME")
+        # m = tf.layers.max_pooling2d(r, pool_size=[3, 3], strides=[2, 2], padding="SAME")
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 2, 2, 1], padding="SAME")
+        n = batch_norm(c, **self.bn_params)
+        m = tf.nn.relu(n)
+
 
         d = tf.nn.dropout(m, self.prob)
         c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")
@@ -50,7 +56,12 @@ class Simplicity:
         n = batch_norm(c, **self.bn_params)
         r = tf.nn.relu(n)
 
-        m = tf.layers.max_pooling2d(r, pool_size=[3, 3], strides=[2, 2], padding="SAME")
+        # m = tf.layers.max_pooling2d(r, pool_size=[3, 3], strides=[2, 2], padding="SAME")
+        d = tf.nn.dropout(r, self.prob)
+        c = tf.nn.conv2d(d, next(weights), strides=[1, 2, 2, 1], padding="SAME")
+        n = batch_norm(c, **self.bn_params)
+        m = tf.nn.relu(n)
+
 
         d = tf.nn.dropout(m, self.prob)
         c = tf.nn.conv2d(d, next(weights), strides=[1, 1, 1, 1], padding="SAME")
@@ -128,7 +139,9 @@ class Simplicity:
 def WeightsGenerator(init_scale):
     yield tf.Variable(tf.random_uniform([3, 3, 3, 96], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 96, 96], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, 96, 96], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 96, 192], minval=-init_scale, maxval=init_scale))
+    yield tf.Variable(tf.random_uniform([3, 3, 192, 192], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 192, 192], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([3, 3, 192, 192], minval=-init_scale, maxval=init_scale))
     yield tf.Variable(tf.random_uniform([1, 1, 192, 192], minval=-init_scale, maxval=init_scale))
