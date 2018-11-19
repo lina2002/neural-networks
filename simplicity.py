@@ -18,7 +18,8 @@ class Simplicity:
         self.keep_prob = keep_prob
 
         weights = WeightsGenerator(init_scale)
-        self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+        self.X_initial = tf.placeholder(tf.float32, [None, 32, 32, 3])
+        self.X = tf.image.random_flip_left_right(self.X_initial)
         self.y = tf.placeholder(tf.float32, [None, 10])
         self.prob = tf.placeholder_with_default(1.0, shape=())
         self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
