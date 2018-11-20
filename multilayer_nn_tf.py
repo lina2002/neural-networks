@@ -19,7 +19,8 @@ class MultiLayerNN:
 
         N = 128
         weights = WeightsGenerator(N, init_scale)
-        self.X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+        X = tf.placeholder(tf.float32, [None, 32, 32, 3])
+        self.X = tf.image.random_flip_left_right(X)
         self.y = tf.placeholder(tf.float32, [None, 10])
         self.prob = tf.placeholder_with_default(1.0, shape=())
         self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
@@ -79,7 +80,17 @@ class MultiLayerNN:
         return r
 
     def predict(self, X):
-        return np.argmax(self.y_pred.eval({self.X: X}), 1)
+        predictions = self.y_pred.eval({self.X: X})
+        flipped_predictions = self.y_pred.eval({self.X: tf.image.flip_left_right(X).eval()})
+        predicitons_max = np.max(predictions)
+        flipped_predictions_max = np.max(flipped_predictions)
+        if predicitons_max > flipped_predictions_max:
+            return np.argmax(predictions, 1)
+        else:
+            return np.argmax(flipped_predictions, 1)
+
+    # def predict(self, X):
+    #     return np.argmax(self.y_pred.eval({self.X: X}), 1)
 
     def fit(self, X_train, y_train, X_valid, y_valid):
         best_validation_accuracy = 0
@@ -117,8 +128,8 @@ class MultiLayerNN:
 
     def get_predictions(self, X):
         preditions = []
-        for i in range(0, X.shape[0], self.batch_size):
-            preditions = np.append(preditions, self.predict(X[i:(i+self.batch_size)]))
+        for i in range(0, X.shape[0], 1000):
+            preditions = np.append(preditions, self.predict(X[i:(i+1000)]))
         return preditions
 
 
