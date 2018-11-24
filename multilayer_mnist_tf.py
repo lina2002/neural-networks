@@ -1,7 +1,7 @@
 import numpy as np
 
 from extract_data import extract_images, extract_labels
-from multilayer_nn_tf import MultiLayerNN
+from simple_nn_tf import SimpleNN
 from utils import shuffle, train_validation_split, compute_accuracy
 
 if __name__ == "__main__":
@@ -21,7 +21,7 @@ if __name__ == "__main__":
               'init_scale': 0.05,
               'keep_prob': 0.75,
               'ema': 0.999}
-    model = MultiLayerNN([28*28, 500, 10], **params)
+    model = SimpleNN([28*28, 500, 10], **params)
     model.fit(training_images, training_labels, valid_images, valid_labels)
 
     eval_images = extract_images('t10k-images-idx3-ubyte.gz')
