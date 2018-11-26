@@ -42,9 +42,11 @@ class SimpleNN:
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
         self.writer = tf.summary.FileWriter(logs_path, self.sess.graph)
+        self.image = tf.summary.image('some images', tf.reshape(self.X, [-1, 32, 32, 3]), max_outputs=3)
 
     def predict(self, X):
-        return np.argmax(self.y_pred.eval({self.X: X}), 1)
+        probabilities = self.y_pred.eval({self.X: X})
+        return np.argmax(probabilities, 1)
 
     def fit(self, X_train, y_train, X_valid, y_valid):
         for epoch in range(self.num_of_epochs):
@@ -52,7 +54,7 @@ class SimpleNN:
             permuted_indices = np.random.permutation(X_train.shape[0])
             for i in range(0, X_train.shape[0], self.batch_size):
                 selected_data_points = np.take(permuted_indices, range(i, i+self.batch_size), mode='wrap')
-                self.sess.run(self.optimizer, {self.X: X_train[selected_data_points],
+                _, image = self.sess.run([self.optimizer, self.image], {self.X: X_train[selected_data_points],
                                                self.y: y_train[selected_data_points], self.prob: self.keep_prob,
                                                self.is_training: True})
 
@@ -68,3 +70,5 @@ class SimpleNN:
             summary = tf.Summary(value=[tf.Summary.Value(tag="validation accuracy",
                                                          simple_value=validation_accuracy)])
             self.writer.add_summary(summary, epoch)
+
+            self.writer.add_summary(image, epoch)
