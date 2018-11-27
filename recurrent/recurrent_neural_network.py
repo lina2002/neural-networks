@@ -2,7 +2,7 @@ import autograd.numpy as np
 
 from autograd import grad
 from autograd.scipy.misc import logsumexp
-
+from tqdm import tqdm
 
 training_file = '/Users/agnieszka.paszek/Documents/pan_tadeusz_1_10.txt'
 validation_file = '/Users/agnieszka.paszek/Documents/pan_tadeusz_11.txt'
@@ -81,27 +81,20 @@ class RecurrentNeuralNetwork:
             ys[t] = np.matmul(W_hy, hs[t])
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
-            # loss += -np.log(ps_target[t])  # softmax (cross-entropy loss)
+            # loss += -np.log(ps_target[t])
             loss += -(ys[t][target_index] - logsumexp(ys[t]))
 
         loss = loss/len(inputs)
         return loss
 
-    def _cost2(self, inputs, targets, hprev, weights):
-        """
-        hprev is initial hidden state
-        returns the loss and last hidden state
-        """
+    def _get_new_hidden_state(self, inputs, hprev, weights):
         W_hh, W_xh, W_hy = weights
         xs, hs, ys, ps = {}, {}, {}, {}
         hs[-1] = np.copy(hprev)
-        loss = 0
         for t in range(len(inputs)):
             xs[t] = char_to_one_hot(inputs[t])
             hs[t] = np.tanh(np.matmul(W_hh, hs[t - 1]) + np.matmul(W_xh, xs[t]))
             ys[t] = np.matmul(W_hy, hs[t])
-            ps[t] = np.exp(ys[t])/np.sum(np.exp(ys[t]))  # probabilities for next chars
-            loss += -np.log(ps[t][char_to_index[targets[t]]])  # softmax (cross-entropy loss)
         return hs[len(inputs) - 1]
 
     def sample(self, seed, number_of_characters_to_generate):
@@ -122,21 +115,20 @@ class RecurrentNeuralNetwork:
     def fit(self):
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
-            point_in_text = 0
             self.h = np.zeros(self.hidden_size)
-            while point_in_text + self.number_of_steps + 1 < len(training_data):
-                inputs = training_data[point_in_text:point_in_text + self.number_of_steps]
-                targets = training_data[point_in_text + 1:point_in_text + 1 + self.number_of_steps]
-                point_in_text += self.number_of_steps
+            for i in tqdm(range((len(training_data)-1)//self.number_of_steps)):
+                inputs = training_data[i*self.number_of_steps:(i+1)*self.number_of_steps]
+                targets = training_data[i*self.number_of_steps+1:(i+1)*self.number_of_steps+1]
 
                 delta_w = self._d_cost(inputs, targets, self.h, self.weights)
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
 
-                self.h = self._cost2(inputs, targets, self.h, self.weights)
+                self.h = self._get_new_hidden_state(inputs, self.h, self.weights)
 
-            prefix = 'Jam jest Jacek'
-            sample = self.sample(prefix[0], 200)
+            prefix = 'Jam jest Jace'
+            self.h = self._get_new_hidden_state(prefix, self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
+            sample = self.sample('k', 200)
             print(sample)
 
 
@@ -146,3 +138,11 @@ params = {'num_of_epochs': 10,
           'number_of_steps': 25}
 rnn = RecurrentNeuralNetwork(alphabet_size, alphabet_size, **params)
 rnn.fit()
+
+
+
+# (i+1)*self.number_of_steps+1 <= len
+# (i+1)*self.number_of_steps <= len-1
+# (i+1) <= (len-1)/self.number_of_steps
+# i <= (len-1)/self.number_of_steps - 1
+# i < (len-1)/self.number_of_steps
