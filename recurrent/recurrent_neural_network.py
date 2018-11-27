@@ -17,9 +17,10 @@ def read_data(filename):
 training_data = read_data(training_file)
 validation_data = read_data(validation_file)
 test_data = read_data(test_file)
-alphabet = sorted(set(training_data))
+alphabet = sorted(set(training_data + validation_data + test_data))   # czy powinnam tutaj uzywac danych walidacyjnych i testowych,
+                                        # jesli nie to jakis domyslny indeks dla kazdego znaku, ktory nie wystepowal w treniningowym?
 alphabet_size = len(alphabet)
-# print(alphabet_size)
+print(alphabet_size)
 
 index_to_char = {index: char for index, char in enumerate(alphabet)}
 char_to_index = {char: index for index, char in enumerate(alphabet)}
@@ -115,6 +116,9 @@ class RecurrentNeuralNetwork:
         return indices_to_string(ixes)
 
     def fit(self):
+        # sanity check, na poczatku powinno byc ~wielkosci alfabetu
+        print('validation perplexity:')
+        print(self.perplexity(validation_data))
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             self.h = np.zeros(self.hidden_size)
