@@ -15,6 +15,7 @@ def read_data(filename):
 
 
 training_data = read_data(training_file)
+print(len(training_data))
 validation_data = read_data(validation_file)
 test_data = read_data(test_file)
 alphabet = sorted(set(training_data + validation_data + test_data))   # czy powinnam tutaj uzywac danych walidacyjnych i testowych,
@@ -92,7 +93,7 @@ class RecurrentNeuralNetwork:
 
     def _get_new_hidden_state(self, inputs, hprev, weights):
         W_hh, W_xh, W_hy = weights
-        xs, hs, ys, ps = {}, {}, {}, {}
+        xs, hs, ys = {}, {}, {}
         hs[-1] = np.copy(hprev)
         for t in range(len(inputs)):
             xs[t] = char_to_one_hot(inputs[t])
@@ -127,6 +128,9 @@ class RecurrentNeuralNetwork:
                 targets = training_data[i*self.number_of_steps+1:(i+1)*self.number_of_steps+1]
 
                 delta_w = self._d_cost(inputs, targets, self.h, self.weights)
+                clipped_delta_w = [np.clip(d, -5, 5) for d in delta_w]
+                # print(any([cdw != dw for cdw, dw in zip(clipped_delta_w, delta_w)]))  doesn't work!
+                delta_w = clipped_delta_w
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
 
@@ -135,10 +139,10 @@ class RecurrentNeuralNetwork:
             print('validation perplexity:')  # czy powinnam zerowac state? jest po 10 ksiegach
             print(self.perplexity(validation_data))
 
-            prefix = 'Jam jest Jace'
-            self.h = self._get_new_hidden_state(prefix, self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
-            sample = self.sample('k', 200)
-            print(sample)
+            prefix = 'Jam jest Jacek'
+            self.h = self._get_new_hidden_state(prefix[:-1], self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
+            sample = self.sample(prefix[-1], 200)
+            print(prefix + sample)
 
         print('test perplexity:')  # czy powinnam zerowac state? jest po 11 ksiegach i 'Jam jest Jacek'...
         print(self.perplexity(test_data))
@@ -148,7 +152,7 @@ class RecurrentNeuralNetwork:
 
 
 params = {'num_of_epochs': 10,
-          'learning_rate': 1.0,
+          'learning_rate': 0.05,
           'init_scale': 0.1,
           'number_of_steps': 25}
 rnn = RecurrentNeuralNetwork(alphabet_size, alphabet_size, **params)
@@ -161,3 +165,19 @@ rnn.fit()
 # (i+1) <= (len-1)/self.number_of_steps
 # i <= (len-1)/self.number_of_steps - 1
 # i < (len-1)/self.number_of_steps
+
+
+
+# TODO
+
+# batch_size
+
+# proszę sprawdzić jak wiele pomagają tzw. embeddings; chodzi tu o to aby zamiast one-hot-wektora literki na wejściu podawać jej reprezentację tej literki jako wektor powiedzmy długości hidden_size;
+# efektywnie przemnażamy one-hot-wektor przez macierz wielkości vocab_size x hidden_size - ???
+# embedding na literkach - przemnożenie przez macierz i użycie fcji aktywacji - np. dropout
+# embedding odwrotny - nie liczyc odwrotnej, tylko stransponowac te macierz i pomnozyc output przez nia - czy tutaj jest jakaś fcja aktywacji?
+# w pracy regularyzacja l2 zamiast dropoutu
+
+# gradient clipping: spróbuj obcinać gradient do jakiejś stałej, np. 6? sprawdź czy to pomaga i jak często clipping jest odpalany
+
+# wizualizacje
