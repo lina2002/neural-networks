@@ -16,6 +16,7 @@ def read_data(filename):
 
 training_data = read_data(training_file)
 validation_data = read_data(validation_file)
+test_data = read_data(test_file)
 alphabet = sorted(set(training_data))
 alphabet_size = len(alphabet)
 # print(alphabet_size)
@@ -127,13 +128,19 @@ class RecurrentNeuralNetwork:
 
                 self.h = self._get_new_hidden_state(inputs, self.h, self.weights)
 
-            print('perplexity:')
-            print(np.exp(self._cost(validation_data[:-1], validation_data[1:], self.h, self.weights, disable_tqdm=False)))
+            print('validation perplexity:')  # czy powinnam zerowac state? jest po 10 ksiegach
+            print(self.perplexity(validation_data))
 
             prefix = 'Jam jest Jace'
             self.h = self._get_new_hidden_state(prefix, self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
             sample = self.sample('k', 200)
             print(sample)
+
+        print('test perplexity:')  # czy powinnam zerowac state? jest po 11 ksiegach i 'Jam jest Jacek'...
+        print(self.perplexity(test_data))
+
+    def perplexity(self, data):
+        return np.exp(self._cost(data[:-1], data[1:], self.h, self.weights, disable_tqdm=False))
 
 
 params = {'num_of_epochs': 10,
