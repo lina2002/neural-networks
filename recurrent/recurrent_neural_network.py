@@ -15,6 +15,7 @@ def read_data(filename):
 
 
 training_data = read_data(training_file)
+validation_data = read_data(validation_file)
 alphabet = sorted(set(training_data))
 alphabet_size = len(alphabet)
 # print(alphabet_size)
@@ -70,12 +71,12 @@ class RecurrentNeuralNetwork:
     def _d_cost(self, inputs, targets, hprev, weights):
         return grad(self._cost, 3)(inputs, targets, hprev, weights)
 
-    def _cost(self, inputs, targets, hprev, weights):
+    def _cost(self, inputs, targets, hprev, weights, disable_tqdm=True):
         W_hh, W_xh, W_hy = weights
         xs, hs, ys, ps_target = {}, {}, {}, {}
         hs[-1] = np.copy(hprev)
         loss = 0
-        for t in range(len(inputs)):
+        for t in tqdm(range(len(inputs)), disable=disable_tqdm):
             xs[t] = char_to_one_hot(inputs[t])
             hs[t] = np.tanh(np.matmul(W_hh, hs[t - 1]) + np.matmul(W_xh, xs[t]))
             ys[t] = np.matmul(W_hy, hs[t])
@@ -125,6 +126,9 @@ class RecurrentNeuralNetwork:
                     w -= d*self.learning_rate
 
                 self.h = self._get_new_hidden_state(inputs, self.h, self.weights)
+
+            print('perplexity:')
+            print(np.exp(self._cost(validation_data[:-1], validation_data[1:], self.h, self.weights, disable_tqdm=False)))
 
             prefix = 'Jam jest Jace'
             self.h = self._get_new_hidden_state(prefix, self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
