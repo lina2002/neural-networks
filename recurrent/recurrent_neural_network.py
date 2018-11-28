@@ -76,30 +76,28 @@ class RecurrentNeuralNetwork:
 
     def _cost(self, inputs, targets, hprev, weights, disable_tqdm=True):
         W_hh, W_xh, W_hy = weights
-        xs, hs, ys, ps_target = {}, {}, {}, {}
-        hs[-1] = np.copy(hprev)
+        h = np.copy(hprev)
         loss = 0
         for t in tqdm(range(len(inputs)), disable=disable_tqdm):
-            xs[t] = char_to_one_hot(inputs[t])
-            hs[t] = np.tanh(np.matmul(W_hh, hs[t - 1]) + np.matmul(W_xh, xs[t]))
-            ys[t] = np.matmul(W_hy, hs[t])
+            x = char_to_one_hot(inputs[t])
+            h = np.tanh(np.matmul(W_hh, h) + np.matmul(W_xh, x))
+            y = np.matmul(W_hy, h)
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
             # loss += -np.log(ps_target[t])
-            loss += -(ys[t][target_index] - logsumexp(ys[t]))
+            loss += -(y[target_index] - logsumexp(y))
 
         loss = loss/len(inputs)
         return loss
 
     def _get_new_hidden_state(self, inputs, hprev, weights):
         W_hh, W_xh, W_hy = weights
-        xs, hs, ys = {}, {}, {}
-        hs[-1] = np.copy(hprev)
+        h = np.copy(hprev)
         for t in range(len(inputs)):
-            xs[t] = char_to_one_hot(inputs[t])
-            hs[t] = np.tanh(np.matmul(W_hh, hs[t - 1]) + np.matmul(W_xh, xs[t]))
-            ys[t] = np.matmul(W_hy, hs[t])
-        return hs[len(inputs) - 1]
+            x = char_to_one_hot(inputs[t])
+            h = np.tanh(np.matmul(W_hh, h) + np.matmul(W_xh, x))
+            y = np.matmul(W_hy, h)
+        return h
 
     def sample(self, seed, number_of_characters_to_generate):
         h = self.h
