@@ -61,15 +61,17 @@ class RecurrentNeuralNetwork:
         self.h = np.zeros(self.hidden_size)
         self.W_hh = self._random_matrix((self.hidden_size, self.hidden_size))
         self.W_xh = self._random_matrix((self.hidden_size, x_size))
+        self.b_h = self._random_matrix((self.hidden_size,))
         self.W_hy = self._random_matrix((y_size, self.hidden_size))
+        self.b_y = self._random_matrix((y_size,))
         self.weights = [self.W_hh, self.W_xh, self.W_hy]
 
     def _random_matrix(self, shape):
         return 2*self.init_scale*np.random.random_sample(shape) - self.init_scale
 
     def step(self, x):
-        self.h = np.tanh(np.matmul(self.W_hh, self.h) + np.matmul(self.W_xh, x))
-        return np.matmul(self.W_hy, self.h)
+        self.h = np.tanh(self.W_hh @ self.h + self.W_xh @ x)
+        return self.W_hy @ self.h
 
     def _d_cost(self, inputs, targets, hprev, weights):
         return grad(self._cost, 3)(inputs, targets, hprev, weights)
@@ -80,8 +82,8 @@ class RecurrentNeuralNetwork:
         loss = 0
         for t in tqdm(range(len(inputs)), disable=disable_tqdm):
             x = char_to_one_hot(inputs[t])
-            h = np.tanh(np.matmul(W_hh, h) + np.matmul(W_xh, x))
-            y = np.matmul(W_hy, h)
+            h = np.tanh(W_hh @ h + W_xh @ x)
+            y = W_hy @ h
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
             # loss += -np.log(ps_target[t])
@@ -95,8 +97,7 @@ class RecurrentNeuralNetwork:
         h = np.copy(hprev)
         for t in range(len(inputs)):
             x = char_to_one_hot(inputs[t])
-            h = np.tanh(np.matmul(W_hh, h) + np.matmul(W_xh, x))
-            y = np.matmul(W_hy, h)
+            h = np.tanh(W_hh @ h + W_xh @ x)
         return h
 
     def sample(self, seed, number_of_characters_to_generate):
@@ -104,8 +105,8 @@ class RecurrentNeuralNetwork:
         x = char_to_one_hot(seed)
         ixes = []
         for t in range(number_of_characters_to_generate):
-            h = np.tanh(np.matmul(self.W_hh, h) + np.matmul(self.W_xh, x))
-            y = np.matmul(self.W_hy, h)
+            h = np.tanh(self.W_hh @ h + self.W_xh @ x)
+            y = self.W_hy @ h
 
             p = np.exp(y)/np.sum(np.exp(y))
             ix = np.random.choice(range(alphabet_size), p=p)
