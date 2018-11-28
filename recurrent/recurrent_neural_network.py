@@ -54,7 +54,7 @@ class RecurrentNeuralNetwork:
     def __init__(self, x_size, y_size, num_of_epochs, learning_rate, init_scale, number_of_steps):
         self.num_of_epochs = num_of_epochs
         self.hidden_size = 200
-        batch_size = 20
+        self.batch_size = 20
         self.number_of_steps = number_of_steps
         self.learning_rate = learning_rate
         self.init_scale = init_scale
@@ -64,26 +64,22 @@ class RecurrentNeuralNetwork:
         self.b_h = self._random_matrix((self.hidden_size,))
         self.W_hy = self._random_matrix((y_size, self.hidden_size))
         self.b_y = self._random_matrix((y_size,))
-        self.weights = [self.W_hh, self.W_xh, self.W_hy]
+        self.weights = [self.W_hh, self.W_xh, self.b_h, self.W_hy, self.b_y]
 
     def _random_matrix(self, shape):
         return 2*self.init_scale*np.random.random_sample(shape) - self.init_scale
-
-    def step(self, x):
-        self.h = np.tanh(self.W_hh @ self.h + self.W_xh @ x)
-        return self.W_hy @ self.h
 
     def _d_cost(self, inputs, targets, hprev, weights):
         return grad(self._cost, 3)(inputs, targets, hprev, weights)
 
     def _cost(self, inputs, targets, hprev, weights, disable_tqdm=True):
-        W_hh, W_xh, W_hy = weights
+        W_hh, W_xh, b_h, W_hy, b_y = weights
         h = np.copy(hprev)
         loss = 0
         for t in tqdm(range(len(inputs)), disable=disable_tqdm):
             x = char_to_one_hot(inputs[t])
-            h = np.tanh(W_hh @ h + W_xh @ x)
-            y = W_hy @ h
+            h = np.tanh(W_hh @ h + W_xh @ x + b_h)
+            y = W_hy @ h + b_y
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
             # loss += -np.log(ps_target[t])
@@ -93,11 +89,11 @@ class RecurrentNeuralNetwork:
         return loss
 
     def _get_new_hidden_state(self, inputs, hprev, weights):
-        W_hh, W_xh, W_hy = weights
+        W_hh, W_xh, b_h, W_hy, b_y = weights
         h = np.copy(hprev)
         for t in range(len(inputs)):
             x = char_to_one_hot(inputs[t])
-            h = np.tanh(W_hh @ h + W_xh @ x)
+            h = np.tanh(W_hh @ h + W_xh @ x + b_h)
         return h
 
     def sample(self, seed, number_of_characters_to_generate):
@@ -105,8 +101,8 @@ class RecurrentNeuralNetwork:
         x = char_to_one_hot(seed)
         ixes = []
         for t in range(number_of_characters_to_generate):
-            h = np.tanh(self.W_hh @ h + self.W_xh @ x)
-            y = self.W_hy @ h
+            h = np.tanh(self.W_hh @ h + self.W_xh @ x + self.b_h)
+            y = self.W_hy @ h + self.b_y
 
             p = np.exp(y)/np.sum(np.exp(y))
             ix = np.random.choice(range(alphabet_size), p=p)
