@@ -20,6 +20,7 @@ validation_data = read_data(validation_file)
 test_data = read_data(test_file)
 alphabet = sorted(set(training_data + validation_data + test_data))   # czy powinnam tutaj uzywac danych walidacyjnych i testowych,
                                         # jesli nie to jakis domyslny indeks dla kazdego znaku, ktory nie wystepowal w treniningowym?
+                                        # moze wszystkie znaki ASCII?
 alphabet_size = len(alphabet)
 print(alphabet_size)
 
