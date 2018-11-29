@@ -80,7 +80,7 @@ class RecurrentNeuralNetwork:
         W_hh, W_xh, b_h, W_hy, b_y = weights
         h = np.copy(hprev)
         loss = 0
-        for t in tqdm(range(self.number_of_steps), disable=disable_tqdm):
+        for t in tqdm(range(len(inputs)), disable=disable_tqdm):
             x = char_to_one_hot(inputs[t])
             h = np.tanh(W_hh @ h + W_xh @ x + b_h)
             y = W_hy @ h + b_y
@@ -89,7 +89,7 @@ class RecurrentNeuralNetwork:
             # loss += -np.log(ps_target[t])
             loss += -(y[target_index] - logsumexp(y))
 
-        loss = loss/self.number_of_steps
+        loss = loss/len(inputs)
         return loss
 
     def _cost_batched(self, inputs, targets, hprev, weights, disable_tqdm=True):
@@ -143,7 +143,8 @@ class RecurrentNeuralNetwork:
     def fit(self):
         training_data_2 = np.array(list(training_data))
         l = len(training_data_2)
-        l -= l % 20
+        l -= l % self.batch_size
+
         training_data_2 = training_data_2[:l]
         training_data_2 = np.array(list(training_data_2))
         training_data_2 = training_data_2.reshape((self.batch_size, -1))
@@ -151,6 +152,8 @@ class RecurrentNeuralNetwork:
         # sanity check, na poczatku powinno byc ~wielkosci alfabetu
         print('validation perplexity:')
         print(self.perplexity(validation_data))
+
+        best_validation_perplexity = 100
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             self.h = np.zeros(self.hidden_size)
@@ -170,7 +173,13 @@ class RecurrentNeuralNetwork:
 
             self.h = self._update_hidden_state(training_data, self.h, self.weights)
             print('validation perplexity:')
-            print(self.perplexity(validation_data))
+            validation_perplexity = self.perplexity(validation_data)
+            print(validation_perplexity)
+
+            if validation_perplexity < best_validation_perplexity:
+                best_validation_perplexity = validation_perplexity
+            else:
+                self.learning_rate /= 2
 
             prefix = 'Jam jest Jacek'
             self.h = self._update_hidden_state(prefix[:-1], self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
