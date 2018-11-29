@@ -73,11 +73,14 @@ class RecurrentNeuralNetwork:
     def _d_cost(self, inputs, targets, hprev, weights):
         return grad(self._cost, 3)(inputs, targets, hprev, weights)
 
+    def _d_cost_batched(self, inputs, targets, hprev, weights):
+        return grad(self._cost_batched, 3)(inputs, targets, hprev, weights)
+
     def _cost(self, inputs, targets, hprev, weights, disable_tqdm=True):
         W_hh, W_xh, b_h, W_hy, b_y = weights
         h = np.copy(hprev)
         loss = 0
-        for t in tqdm(range(len(inputs)), disable=disable_tqdm):
+        for t in tqdm(range(self.number_of_steps), disable=disable_tqdm):
             x = char_to_one_hot(inputs[t])
             h = np.tanh(W_hh @ h + W_xh @ x + b_h)
             y = W_hy @ h + b_y
@@ -86,15 +89,40 @@ class RecurrentNeuralNetwork:
             # loss += -np.log(ps_target[t])
             loss += -(y[target_index] - logsumexp(y))
 
-        loss = loss/len(inputs)
+        loss = loss/self.number_of_steps
         return loss
 
-    def _get_new_hidden_state(self, inputs, hprev, weights):
+    def _cost_batched(self, inputs, targets, hprev, weights, disable_tqdm=True):
         W_hh, W_xh, b_h, W_hy, b_y = weights
         h = np.copy(hprev)
+        h = h.reshape((self.batch_size, self.hidden_size, 1))
+        loss = 0
+        for t in tqdm(range(self.number_of_steps), disable=disable_tqdm):
+            x = np.array([char_to_one_hot(c) for c in inputs[:, t]])
+            x = x.reshape((self.batch_size, -1, 1))
+            h = np.tanh(W_hh @ h + W_xh @ x + np.reshape(b_h, (-1, 1)))
+            ys = W_hy @ h + np.reshape(b_y, (-1, 1))
+            ys = np.squeeze(ys)
+            target_indices = np.array([char_to_index[c] for c in targets[:, t]])
+            # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
+            # loss += -np.log(ps_target[t])
+            loss += np.sum([-(y[target_index] - logsumexp(y)) for y, target_index in zip(ys, target_indices)])/(self.number_of_steps*self.batch_size)
+        return loss
+
+    def _update_hidden_state(self, inputs, h, weights):
+        W_hh, W_xh, b_h, W_hy, b_y = weights
         for t in range(len(inputs)):
             x = char_to_one_hot(inputs[t])
             h = np.tanh(W_hh @ h + W_xh @ x + b_h)
+        return h
+
+    def _update_hidden_state_batched(self, inputs, h, weights):
+        W_hh, W_xh, b_h, W_hy, b_y = weights
+        for t in range(self.number_of_steps):
+            x = np.array([char_to_one_hot(c) for c in inputs[:, t]])
+            x = x.reshape((self.batch_size, -1, 1))
+            h = h.reshape((self.batch_size, self.hidden_size, 1))
+            h = np.squeeze(np.tanh(W_hh @ h + W_xh @ x + np.reshape(b_h, (-1, 1))))
         return h
 
     def sample(self, seed, number_of_characters_to_generate):
@@ -113,34 +141,43 @@ class RecurrentNeuralNetwork:
         return indices_to_string(ixes)
 
     def fit(self):
+        training_data_2 = np.array(list(training_data))
+        l = len(training_data_2)
+        l -= l % 20
+        training_data_2 = training_data_2[:l]
+        training_data_2 = np.array(list(training_data_2))
+        training_data_2 = training_data_2.reshape((self.batch_size, -1))
+
         # sanity check, na poczatku powinno byc ~wielkosci alfabetu
         print('validation perplexity:')
         print(self.perplexity(validation_data))
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             self.h = np.zeros(self.hidden_size)
-            for i in tqdm(range((len(training_data)-1)//self.number_of_steps)):
-                inputs = training_data[i*self.number_of_steps:(i+1)*self.number_of_steps]
-                targets = training_data[i*self.number_of_steps+1:(i+1)*self.number_of_steps+1]
+            hprev = np.tile(self.h, (self.batch_size, 1))
+            for i in tqdm(range((training_data_2.shape[1]-1)//self.number_of_steps)):
+                inputs = training_data_2[:, i*self.number_of_steps:(i+1)*self.number_of_steps]
+                targets = training_data_2[:, i*self.number_of_steps+1:(i+1)*self.number_of_steps+1]
 
-                delta_w = self._d_cost(inputs, targets, self.h, self.weights)
+                delta_w = self._d_cost_batched(inputs, targets, hprev, self.weights)
                 clipped_delta_w = [np.clip(d, -5, 5) for d in delta_w]
                 # print(any([cdw != dw for cdw, dw in zip(clipped_delta_w, delta_w)]))  doesn't work!
                 delta_w = clipped_delta_w
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
 
-                self.h = self._get_new_hidden_state(inputs, self.h, self.weights)
+                hprev = self._update_hidden_state_batched(inputs, hprev, self.weights)
 
-            print('validation perplexity:')  # czy powinnam zerowac state? jest po 10 ksiegach
+            self.h = self._update_hidden_state(training_data, self.h, self.weights)
+            print('validation perplexity:')
             print(self.perplexity(validation_data))
 
             prefix = 'Jam jest Jacek'
-            self.h = self._get_new_hidden_state(prefix[:-1], self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
+            self.h = self._update_hidden_state(prefix[:-1], self.h, self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
             sample = self.sample(prefix[-1], 200)
             print(prefix + sample)
 
-        print('test perplexity:')  # czy powinnam zerowac state? jest po 11 ksiegach i 'Jam jest Jacek'...
+        print('test perplexity:')  # czy powinnam zerowac state? jest po 11. ksiedze i 'Jam jest Jacek'...
         print(self.perplexity(test_data))
 
     def perplexity(self, data):
@@ -148,7 +185,7 @@ class RecurrentNeuralNetwork:
 
 
 params = {'num_of_epochs': 10,
-          'learning_rate': 0.05,
+          'learning_rate': 0.5,
           'init_scale': 0.1,
           'number_of_steps': 25}
 rnn = RecurrentNeuralNetwork(alphabet_size, alphabet_size, **params)
@@ -166,7 +203,6 @@ rnn.fit()
 
 # TODO
 
-# batch_size
 
 # proszę sprawdzić jak wiele pomagają tzw. embeddings; chodzi tu o to aby zamiast one-hot-wektora literki na wejściu podawać jej reprezentację tej literki jako wektor powiedzmy długości hidden_size;
 # efektywnie przemnażamy one-hot-wektor przez macierz wielkości vocab_size x hidden_size - ???
@@ -177,3 +213,6 @@ rnn.fit()
 # gradient clipping: spróbuj obcinać gradient do jakiejś stałej, np. 6? sprawdź czy to pomaga i jak często clipping jest odpalany
 
 # wizualizacje
+
+
+# sprawdzic, czy przepuszczenie treningowego przed walidacja poprawia wyniki
