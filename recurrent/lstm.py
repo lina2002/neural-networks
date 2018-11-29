@@ -50,6 +50,7 @@ class LSTM:
     def __init__(self, x_size, y_size, num_of_epochs, learning_rate, init_scale, number_of_steps):
         self.num_of_epochs = num_of_epochs
         self.h_size = h_size = 200
+        self.batch_size = 20
         self.number_of_steps = number_of_steps
         self.learning_rate = learning_rate
         self.init_scale = init_scale
@@ -91,8 +92,36 @@ class LSTM:
         loss = loss/len(inputs)
         return loss
 
+    def _cost_batched(self, inputs, targets, hprev, Cprev, weights, disable_tqdm=True):
+        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o, W, b = weights
+        h = np.copy(hprev)
+        C = np.copy(Cprev)
+        h = h.reshape((self.batch_size, self.h_size, 1))
+        C = C.reshape((self.batch_size, self.h_size, 1))
+        loss = 0
+        for t in tqdm(range(len(inputs)), disable=disable_tqdm):
+            x = np.array([char_to_one_hot(c) for c in inputs[:, t]])
+            x = x.reshape((self.batch_size, -1, 1))
+
+            f = sigmoid(np.matmul(W_f, np.concatenate((h, x), axis=1)) + np.reshape(b_f, (-1, 1)))
+            i = sigmoid(np.matmul(W_i, np.concatenate((h, x), axis=1)) + np.reshape(b_i, (-1, 1)))
+            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x), axis=1)) + np.reshape(b_c, (-1, 1)))
+            C = f*C + i*C_hat
+            o = sigmoid(np.matmul(W_o, np.concatenate((h, x), axis=1)) + np.reshape(b_o, (-1, 1)))
+            h = o*np.tanh(C)
+            ys = np.matmul(W, h) + np.reshape(b, (-1, 1))
+
+            target_indices = np.array([char_to_index[c] for c in targets[:, t]])
+            # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
+            # loss += -np.log(ps_target[t])
+            loss += np.sum([-(y[target_index] - logsumexp(y)) for y, target_index in zip(ys, target_indices)])/(self.number_of_steps*self.batch_size)
+        return loss
+
     def _d_cost(self, inputs, targets, hprev, Cprev, weights):
         return grad(self._cost, 4)(inputs, targets, hprev, Cprev, weights)
+
+    def _d_cost_batched(self, inputs, targets, hprev, Cprev, weights):
+        return grad(self._cost_batched, 4)(inputs, targets, hprev, Cprev, weights)
 
     def _random_matrix(self, shape):
         return 2*self.init_scale*np.random.random_sample(shape) - self.init_scale
@@ -112,6 +141,22 @@ class LSTM:
             o = sigmoid(np.matmul(W_o, np.concatenate((self.h, x))) + b_o)
             self.h = o*np.tanh(self.C)
         return self.h
+
+    def _update_hidden_state_batched(self, inputs, h, C, weights):
+        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o, W, b = weights
+        h = h.reshape((self.batch_size, self.h_size, 1))
+        C = C.reshape((self.batch_size, self.h_size, 1))
+        for t in range(len(inputs)):
+            x = np.array([char_to_one_hot(c) for c in inputs[:, t]])
+            x = x.reshape((self.batch_size, -1, 1))
+
+            f = sigmoid(np.matmul(W_f, np.concatenate((h, x), axis=1)) + np.reshape(b_f, (-1, 1)))
+            i = sigmoid(np.matmul(W_i, np.concatenate((h, x), axis=1)) + np.reshape(b_i, (-1, 1)))
+            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x), axis=1)) + np.reshape(b_c, (-1, 1)))
+            C = f*C + i*C_hat
+            o = sigmoid(np.matmul(W_o, np.concatenate((h, x), axis=1)) + np.reshape(b_o, (-1, 1)))
+            h = o*np.tanh(C)
+        return h, C
 
     def sample(self, seed, number_of_characters_to_generate):
         h = self.h
@@ -135,25 +180,35 @@ class LSTM:
         return indices_to_string(ixes)
 
     def fit(self):
+        training_data_2 = np.array(list(training_data))
+        l = len(training_data_2)
+        l -= l % self.batch_size
+
+        training_data_2 = training_data_2[:l]
+        training_data_2 = np.array(list(training_data_2))
+        training_data_2 = training_data_2.reshape((self.batch_size, -1))
+
         # sanity check, na poczatku powinno byc ~wielkosci alfabetu
         print('validation perplexity:')
-        print(self.perplexity(validation_data))
+        #         print(self.perplexity(validation_data))
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             self.C = np.zeros(self.h_size)
             self.h = np.zeros(self.h_size)
-            for i in tqdm(range((len(training_data) - 1)//self.number_of_steps)):
-                inputs = training_data[i*self.number_of_steps:(i + 1)*self.number_of_steps]
-                targets = training_data[i*self.number_of_steps + 1:(i + 1)*self.number_of_steps + 1]
+            hprev = np.tile(self.h, (self.batch_size, 1))
+            Cprev = np.tile(self.C, (self.batch_size, 1))
+            for i in tqdm(range((training_data_2.shape[1]-1)//self.number_of_steps)):
+                inputs = training_data_2[:, i*self.number_of_steps:(i+1)*self.number_of_steps]
+                targets = training_data_2[:, i*self.number_of_steps+1:(i+1)*self.number_of_steps+1]
 
-                delta_w = self._d_cost(inputs, targets, self.h, self.C, self.weights)
+                delta_w = self._d_cost_batched(inputs, targets, hprev, Cprev, self.weights)
                 clipped_delta_w = [np.clip(d, -5, 5) for d in delta_w]
                 # print(any([cdw != dw for cdw, dw in zip(clipped_delta_w, delta_w)]))  doesn't work!
                 delta_w = clipped_delta_w
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
 
-                self._update_hidden_state(inputs, self.weights)
+                hprev, Cprev = self._update_hidden_state_batched(inputs, hprev, Cprev, self.weights)
 
             print('validation perplexity:')  # czy powinnam zerowac state? jest po 10 ksiegach
             print(self.perplexity(validation_data))
@@ -169,8 +224,9 @@ class LSTM:
 
 
 params = {'num_of_epochs': 20,
-          'learning_rate': 1.0,
+          'learning_rate': 0.5,
           'init_scale': 0.1,
           'number_of_steps': 25}
 lstm = LSTM(alphabet_size, alphabet_size, **params)
 lstm.fit()
+
