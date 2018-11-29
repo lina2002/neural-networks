@@ -81,7 +81,7 @@ class LSTM:
             C = f*C + i*C_hat
             o = sigmoid(np.matmul(W_o, np.concatenate((h, x))) + b_o)
             h = o*np.tanh(C)
-            y = np.matmul(self.W, h) + self.b
+            y = np.matmul(W, h) + b
 
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
