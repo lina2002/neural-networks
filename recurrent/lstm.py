@@ -49,7 +49,7 @@ class LSTM:
 
     def __init__(self, x_size, y_size, num_of_epochs, learning_rate, init_scale, number_of_steps):
         self.num_of_epochs = num_of_epochs
-        self.h_size = h_size = y_size
+        self.h_size = h_size = 200
         self.number_of_steps = number_of_steps
         self.learning_rate = learning_rate
         self.init_scale = init_scale
@@ -63,10 +63,12 @@ class LSTM:
         self.b_c = self._random_matrix((h_size,))
         self.W_o = self._random_matrix((h_size, h_size + x_size))
         self.b_o = self._random_matrix((h_size,))
-        self.weights = [self.W_f, self.b_f, self.W_i, self.b_i, self.W_c, self.b_c, self.W_o, self.b_o]
+        self.W = self._random_matrix((y_size, h_size))
+        self.b = self._random_matrix((y_size,))
+        self.weights = [self.W_f, self.b_f, self.W_i, self.b_i, self.W_c, self.b_c, self.W_o, self.b_o, self.W, self.b]
 
     def _cost(self, inputs, targets, hprev, Cprev, weights, disable_tqdm=True):
-        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o = weights
+        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o, W, b = weights
         h = np.copy(hprev)
         C = np.copy(Cprev)
         loss = 0
@@ -79,11 +81,12 @@ class LSTM:
             C = f*C + i*C_hat
             o = sigmoid(np.matmul(W_o, np.concatenate((h, x))) + b_o)
             h = o*np.tanh(C)
+            y = np.matmul(self.W, h) + self.b
 
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
             # loss += -np.log(ps_target[t])
-            loss += -(h[target_index] - logsumexp(h))
+            loss += -(y[target_index] - logsumexp(y))
 
         loss = loss/len(inputs)
         return loss
@@ -97,20 +100,18 @@ class LSTM:
     def perplexity(self, data):
         return np.exp(self._cost(data[:-1], data[1:], self.h, self.C, self.weights, disable_tqdm=False))
 
-    def _get_new_hidden_state(self, inputs, hprev, Cprev, weights):
-        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o = weights
-        h = np.copy(hprev)
-        C = np.copy(Cprev)
+    def _update_hidden_state(self, inputs, weights):
+        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o, W, b = weights
         for t in range(len(inputs)):
             x = char_to_one_hot(inputs[t])
 
-            f = sigmoid(np.matmul(W_f, np.concatenate((h, x))) + b_f)
-            i = sigmoid(np.matmul(W_i, np.concatenate((h, x))) + b_i)
-            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x))) + b_c)
-            C = f*C + i*C_hat
-            o = sigmoid(np.matmul(W_o, np.concatenate((h, x))) + b_o)
-            h = o*np.tanh(C)
-        return h
+            f = sigmoid(np.matmul(W_f, np.concatenate((self.h, x))) + b_f)
+            i = sigmoid(np.matmul(W_i, np.concatenate((self.h, x))) + b_i)
+            C_hat = np.tanh(np.matmul(W_c, np.concatenate((self.h, x))) + b_c)
+            self.C = f*self.C + i*C_hat
+            o = sigmoid(np.matmul(W_o, np.concatenate((self.h, x))) + b_o)
+            self.h = o*np.tanh(self.C)
+        return self.h
 
     def sample(self, seed, number_of_characters_to_generate):
         h = self.h
@@ -124,8 +125,9 @@ class LSTM:
             C = f*C + i*C_hat
             o = sigmoid(np.matmul(self.W_o, np.concatenate((h, x))) + self.b_o)
             h = o*np.tanh(C)
+            y = np.matmul(self.W, h) + self.b
 
-            p = np.exp(h)/np.sum(np.exp(h))
+            p = np.exp(y)/np.sum(np.exp(y))
             ix = np.random.choice(range(alphabet_size), p=p)
             x = np.zeros(alphabet_size)
             x[ix] = 1
@@ -151,14 +153,14 @@ class LSTM:
                 for w, d in zip(self.weights, delta_w):
                     w -= d*self.learning_rate
 
-                self.h = self._get_new_hidden_state(inputs, self.h, self.C, self.weights)
+                self._update_hidden_state(inputs, self.weights)
 
             print('validation perplexity:')  # czy powinnam zerowac state? jest po 10 ksiegach
             print(self.perplexity(validation_data))
 
             prefix = 'Jam jest Jacek'
-            self.h = self._get_new_hidden_state(prefix[:-1], self.h, self.C,
-                                                self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
+            self._update_hidden_state(prefix[:-1],
+                                      self.weights)  # najpierw wprowadzam prefix ignorujac outputy, nie zaczynam wczytywac ich zaraz po J
             sample = self.sample(prefix[-1], 200)
             print(prefix + sample)
 
@@ -166,8 +168,8 @@ class LSTM:
         print(self.perplexity(test_data))
 
 
-params = {'num_of_epochs': 10,
-          'learning_rate': 0.05,
+params = {'num_of_epochs': 20,
+          'learning_rate': 1.0,
           'init_scale': 0.1,
           'number_of_steps': 25}
 lstm = LSTM(alphabet_size, alphabet_size, **params)
