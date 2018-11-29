@@ -56,24 +56,28 @@ class LSTM:
         self.C = np.zeros(h_size)
         self.h = np.zeros(h_size)
         self.W_f = self._random_matrix((h_size, h_size + x_size))
+        self.b_f = self._random_matrix((h_size,)) + 1
         self.W_i = self._random_matrix((h_size, h_size + x_size))
+        self.b_i = self._random_matrix((h_size,))
         self.W_c = self._random_matrix((h_size, h_size + x_size))
+        self.b_c = self._random_matrix((h_size,))
         self.W_o = self._random_matrix((h_size, h_size + x_size))
-        self.weights = [self.W_f, self.W_i, self.W_c, self.W_o]
+        self.b_o = self._random_matrix((h_size,))
+        self.weights = [self.W_f, self.b_f, self.W_i, self.b_i, self.W_c, self.b_c, self.W_o, self.b_o]
 
     def _cost(self, inputs, targets, hprev, Cprev, weights, disable_tqdm=True):
-        W_f, W_i, W_c, W_o = weights
+        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o = weights
         h = np.copy(hprev)
         C = np.copy(Cprev)
         loss = 0
         for t in tqdm(range(len(inputs)), disable=disable_tqdm):
             x = char_to_one_hot(inputs[t])
 
-            f = sigmoid(np.matmul(W_f, np.concatenate((h, x))))
-            i = sigmoid(np.matmul(W_i, np.concatenate((h, x))))
-            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x))))
+            f = sigmoid(np.matmul(W_f, np.concatenate((h, x))) + b_f)
+            i = sigmoid(np.matmul(W_i, np.concatenate((h, x))) + b_i)
+            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x))) + b_c)
             C = f*C + i*C_hat
-            o = sigmoid(np.matmul(W_o, np.concatenate((h, x))))
+            o = sigmoid(np.matmul(W_o, np.concatenate((h, x))) + b_o)
             h = o*np.tanh(C)
 
             target_index = char_to_index[targets[t]]
@@ -94,17 +98,17 @@ class LSTM:
         return np.exp(self._cost(data[:-1], data[1:], self.h, self.C, self.weights, disable_tqdm=False))
 
     def _get_new_hidden_state(self, inputs, hprev, Cprev, weights):
-        W_f, W_i, W_c, W_o = weights
+        W_f, b_f, W_i, b_i, W_c, b_c, W_o, b_o = weights
         h = np.copy(hprev)
         C = np.copy(Cprev)
         for t in range(len(inputs)):
             x = char_to_one_hot(inputs[t])
 
-            f = sigmoid(np.matmul(W_f, np.concatenate((h, x))))
-            i = sigmoid(np.matmul(W_i, np.concatenate((h, x))))
-            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x))))
+            f = sigmoid(np.matmul(W_f, np.concatenate((h, x))) + b_f)
+            i = sigmoid(np.matmul(W_i, np.concatenate((h, x))) + b_i)
+            C_hat = np.tanh(np.matmul(W_c, np.concatenate((h, x))) + b_c)
             C = f*C + i*C_hat
-            o = sigmoid(np.matmul(W_o, np.concatenate((h, x))))
+            o = sigmoid(np.matmul(W_o, np.concatenate((h, x))) + b_o)
             h = o*np.tanh(C)
         return h
 
@@ -114,11 +118,11 @@ class LSTM:
         x = char_to_one_hot(seed)
         ixes = []
         for t in range(number_of_characters_to_generate):
-            f = sigmoid(np.matmul(self.W_f, np.concatenate((h, x))))
-            i = sigmoid(np.matmul(self.W_i, np.concatenate((h, x))))
-            C_hat = np.tanh(np.matmul(self.W_c, np.concatenate((h, x))))
+            f = sigmoid(np.matmul(self.W_f, np.concatenate((h, x))) + self.b_f)
+            i = sigmoid(np.matmul(self.W_i, np.concatenate((h, x))) + self.b_i)
+            C_hat = np.tanh(np.matmul(self.W_c, np.concatenate((h, x))) + self.b_c)
             C = f*C + i*C_hat
-            o = sigmoid(np.matmul(self.W_o, np.concatenate((h, x))))
+            o = sigmoid(np.matmul(self.W_o, np.concatenate((h, x))) + self.b_o)
             h = o*np.tanh(C)
 
             p = np.exp(h)/np.sum(np.exp(h))
