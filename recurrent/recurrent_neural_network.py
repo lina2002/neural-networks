@@ -76,19 +76,25 @@ class RecurrentNeuralNetwork:
     def _d_cost_batched(self, inputs, targets, hprev, weights):
         return grad(self._cost_batched, 3)(inputs, targets, hprev, weights)
 
-    def _cost(self, inputs, targets, hprev, weights, disable_tqdm=True):
+    def _cost_with_vis(self, inputs, targets, hprev, weights, disable_tqdm=True, epoch=None):
+        if epoch:
+            f = open("values.txt", "w+")
         W_hh, W_xh, b_h, W_hy, b_y = weights
         h = np.copy(hprev)
         loss = 0
         for t in tqdm(range(len(inputs)), disable=disable_tqdm):
             x = char_to_one_hot(inputs[t])
             h = np.tanh(W_hh @ h + W_xh @ x + b_h)
+            if epoch:
+                f.write(','.join(h.astype(str)) + '\n')
+
             y = W_hy @ h + b_y
             target_index = char_to_index[targets[t]]
             # ps_target[t] = np.exp(ys[t][target_index])/np.sum(np.exp(ys[t]))  # probability for next chars being target
             # loss += -np.log(ps_target[t])
             loss += -(y[target_index] - logsumexp(y))
-
+        if epoch:
+            f.close()
         loss = loss/len(inputs)
         return loss
 
@@ -150,8 +156,8 @@ class RecurrentNeuralNetwork:
         training_data_2 = training_data_2.reshape((self.batch_size, -1))
 
         # sanity check, na poczatku powinno byc ~wielkosci alfabetu
-        print('validation perplexity:')
-        print(self.perplexity(validation_data))
+        # print('validation perplexity:')
+        # print(self.perplexity(validation_data))
 
         best_validation_perplexity = 100
         for epoch in range(self.num_of_epochs):
@@ -173,7 +179,7 @@ class RecurrentNeuralNetwork:
 
             self.h = self._update_hidden_state(training_data, self.h, self.weights)
             print('validation perplexity:')
-            validation_perplexity = self.perplexity(validation_data)
+            validation_perplexity = self.perplexity(validation_data, epoch)
             print(validation_perplexity)
 
             if validation_perplexity < best_validation_perplexity:
@@ -189,11 +195,11 @@ class RecurrentNeuralNetwork:
         print('test perplexity:')  # czy powinnam zerowac state? jest po 11. ksiedze i 'Jam jest Jacek'...
         print(self.perplexity(test_data))
 
-    def perplexity(self, data):
-        return np.exp(self._cost(data[:-1], data[1:], self.h, self.weights, disable_tqdm=False))
+    def perplexity(self, data, epoch=None):
+        return np.exp(self._cost_with_vis(data[:-1], data[1:], self.h, self.weights, disable_tqdm=False, epoch=epoch))
 
 
-params = {'num_of_epochs': 10,
+params = {'num_of_epochs': 1,
           'learning_rate': 0.5,
           'init_scale': 0.1,
           'number_of_steps': 25}
