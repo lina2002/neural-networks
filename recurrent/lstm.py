@@ -190,7 +190,8 @@ class LSTM:
 
         # sanity check, na poczatku powinno byc ~wielkosci alfabetu
         print('validation perplexity:')
-        #         print(self.perplexity(validation_data))
+        print(self.perplexity(validation_data))
+        best_validation_perplexity = 100
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
             self.C = np.zeros(self.h_size)
@@ -211,7 +212,13 @@ class LSTM:
                 hprev, Cprev = self._update_hidden_state_batched(inputs, hprev, Cprev, self.weights)
 
             print('validation perplexity:')  # czy powinnam zerowac state? jest po 10 ksiegach
-            print(self.perplexity(validation_data))
+            validation_perplexity = self.perplexity(validation_data)
+            print(validation_perplexity)
+
+            if validation_perplexity < best_validation_perplexity:
+                best_validation_perplexity = validation_perplexity
+            else:
+                self.learning_rate /= 2
 
             prefix = 'Jam jest Jacek'
             self._update_hidden_state(prefix[:-1],
@@ -224,9 +231,8 @@ class LSTM:
 
 
 params = {'num_of_epochs': 20,
-          'learning_rate': 0.5,
+          'learning_rate': 8,
           'init_scale': 0.1,
           'number_of_steps': 25}
 lstm = LSTM(alphabet_size, alphabet_size, **params)
 lstm.fit()
-
