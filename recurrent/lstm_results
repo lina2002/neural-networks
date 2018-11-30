@@ -1,0 +1,239 @@
+371343
+87
+validation perplexity:
+ 99%|█████████▉| 30250/30457 [00:10<00:00, 2436.13it/s]86.39276125854188
+epoch number: 1
+100%|██████████| 30457/30457 [00:10<00:00, 2790.02it/s]
+  0%|          | 0/14853 [00:00<?, ?it/s]/Users/agnieszka.paszek/venv/tcs-ml/lib/python3.6/site-packages/autograd/numpy/numpy_vjps.py:444: FutureWarning: Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result either in an error or a different result.
+  return lambda g: g[idxs]
+ 99%|█████████▊| 14645/14853 [26:46<00:20, 10.13it/s]validation perplexity:
+100%|██████████| 14853/14853 [27:06<00:00, 10.67it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4095.81it/s]
+  1%|          | 133/14853 [00:12<23:27, 10.46it/s]11.406163471642692
+Jam jest Jacek prubróc: do o rolęch nie ppom, wałPóo m Krzerzś miebie:
+
+    Tu todżiem glerm, spracie —ła nac rana wnerz nie j prziekny, do ulę nie un odem, jak śrośli cianem otocrękie miec, przekmą sprwył usty:
+
+N
+epoch number: 2
+100%|██████████| 14853/14853 [23:53<00:00, 10.36it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4094.38it/s]
+  0%|          | 33/14853 [00:03<24:01, 10.28it/s]validation perplexity:
+9.958271217705375
+Jam jest Jaceka) skłocie przek wądcie głoś pokrujańszy namuje
+Bdzeszca? rakie mierkie częnił się wyniemie do skiera
+
+    bwież powszeb kłodzały strąś» sł, pobrzeu mobej chrą*bychy! czeje, plana f dwegłeś — strogę m
+epoch number: 3
+100%|██████████| 14853/14853 [23:46<00:00, 10.34it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+ 99%|█████████▉| 30297/30457 [00:07<00:00, 4395.97it/s]8.834629775387988
+100%|██████████| 30457/30457 [00:07<00:00, 3907.82it/s]
+  0%|          | 0/14853 [00:00<?, ?it/s]Jam jest Jacek norąku. W pokiści ledzie my ćzgery,
+Mażał na przyjązał się długuniam ołtę, konie zleczały.
+
+    Złyk przyradko po szczęte, wszysłazy czurowa sarzowy
+Oty jak jacem jako bo to złono
+Murzen do a tykę gł
+epoch number: 4
+100%|██████████| 14853/14853 [33:45<00:00,  9.59it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:08<00:00, 3539.59it/s]
+8.245727372462822
+  0%|          | 0/14853 [00:00<?, ?it/s]Jam jest Jacek —
+Jaków sbrony zniegryje!
+Przyjecha ruona, rąbam nie mośli w dobrzu, noga».
+
+    «Byży draw kozenie Telem przytar?la ż ujak z zarzuid…
+Jyśmido wszasuko łobyk, nakżowsa — Ale przyjanie sią skęzyka!
+I
+epoch number: 5
+100%|██████████| 14853/14853 [25:48<00:00,  9.59it/s]
+ 92%|█████████▏| 28134/30457 [00:07<00:00, 4001.63it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:07<00:00, 3913.54it/s]
+  1%|          | 185/14853 [00:19<24:56,  9.80it/s]7.8081658154464915
+Jam jest Jacek momy;
+Z niebo z sią rozkobu dokny, to rani(.
+
+    Prawie!.
+Więski zniku łaki z świecz z rady nowy gnowę.
+«Cicze panniu wzrazy progi, odwie łestące rapno!
+Mniedz mogę zy tem spote! Oleż zaraz wrodją,
+epoch number: 6
+100%|██████████| 14853/14853 [25:31<00:00, 10.14it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:07<00:00, 3921.48it/s]
+  1%|▏         | 195/14853 [00:19<24:18, 10.05it/s]7.505002859289071
+Jam jest Jacek bojmycy!
+Mszępać nierszega wzrzegać w tygno)si, jak jedwa znajega.
+
+    «Tatek… Przez płatkę a nie magnem;
+Wszystko zdyczyć się? ryską …
+W tógi się zegałać,
+Wiecz do gałbie pryśzne napadał do swajżać
+epoch number: 7
+100%|██████████| 14853/14853 [24:20<00:00, 10.53it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4109.33it/s]
+  1%|          | 119/14853 [00:11<23:30, 10.45it/s]validation perplexity:
+7.302725025473588
+Jam jest Jacek halu!
+Mnie wiedzie w pokrzewskie jako licowa…
+Więc wprost odpagły za Kluczny,
+Przecie to jako, szez kropuków comniej,
+Wszedłz tóg nie: wdeżweś mu z taku na gnowy oką rodzywy
+I znożu pod Buciej z kręc
+epoch number: 8
+100%|██████████| 14853/14853 [23:18<00:00, 10.62it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4247.56it/s]
+  0%|          | 56/14853 [00:05<22:53, 10.77it/s]validation perplexity:
+7.140589060379465
+Jam jest Jacek Był tąpie
+O bronią, jako choreż i cof kłodoś miałem grykę
+I przesię, przyszlicę pódneć ostawy wyciąkliwę,
+Za Podki, z mnie stojązy, z kłuperem ze szlachte;
+Któbie zrywam przebowałem. Niejmie patrzen
+epoch number: 9
+100%|██████████| 14853/14853 [23:09<00:00, 11.09it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4255.14it/s]
+  1%|          | 93/14853 [00:08<22:31, 10.92it/s]validation perplexity:
+7.000571190216407
+Jam jest Jacek ludził,
+A zaszmona ranie, zaść Hrabio Polic,
+Gdzie czeka, rzekł braci! może, przebatne
+I Mało z ropły:
+
+    Konnych me dwarze obyliela!
+Zą przyjskiej wegół, i śniecami poknie;
+Wieczy, żeby się, przeb
+epoch number: 10
+ 99%|█████████▊| 14660/14853 [22:40<00:17, 10.82it/s]validation perplexity:
+100%|██████████| 14853/14853 [22:58<00:00, 10.78it/s]
+ 35%|███▍      | 10562/30457 [00:02<00:04, 4383.41it/s]6.893924893964957
+Jam jest Jacek zpani;
+Kto mnik Żwad czołe scholać, ad dompów!»
+«Termurem, krwy dobrywy
+Kozpuczania płocny i zwywieł — urwał na litek dziecie!
+U wiedzi, odbieść przykosi krów na sichej.
+Pyście — teraz, żenny isek sz
+epoch number: 11
+100%|██████████| 30457/30457 [00:06<00:00, 4355.08it/s]
+100%|██████████| 14853/14853 [24:24<00:00, 11.33it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:07<00:00, 4251.51it/s]
+6.823508212411991
+  0%|          | 0/14853 [00:00<?, ?it/s]Jam jest Jacek,
+I zaczątelu z Znatym sisem…
+
+        I przebuchł z delena zmutki.
+
+    Chlibę cara na Dobrognie filem!
+Podupnownie ostat pseser toz torbazy.
+Przeboja mu cicha.
+
+    Roskazał pan odenałem opaczy!
+Lec
+epoch number: 12
+100%|██████████| 14853/14853 [26:26<00:00,  9.36it/s]
+ 20%|█▉        | 5982/30457 [00:01<00:05, 4330.16it/s]validation perplexity:
+6.781209623946183
+Jam jest Jacek zamek pościąga
+Nie przybrał mi przyjacielu… wstyggę śledz zakrużny cory,
+Jeza, onstrzela bagna trabie rozkiemkę
+Z podeby zdraszy stołom dobywo? jego zpuszeć kochany
+Saczyście, przebaczłowił ejce szli
+epoch number: 13
+100%|██████████| 30457/30457 [00:07<00:00, 4171.56it/s]
+ 99%|█████████▉| 14736/14853 [23:24<00:10, 10.80it/s]validation perplexity:
+6.769160994339426
+Jam jest Jacek
+Dobrze mówił się brzezikim wyszłze Sędzia,
+Pottronny tym czasy pierwszy spokocne! ciche niczym polbo—
+Zucię Filne dwóch uczucie łacy stary:
+
+
+  A Często — rzekł Tędu się kona,
+I dziedzić, a razem, rz
+epoch number: 14
+100%|██████████| 14853/14853 [23:34<00:00, 10.50it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4245.37it/s]
+100%|██████████| 14853/14853 [23:47<00:00,  8.95it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+ 99%|█████████▉| 30236/30457 [00:08<00:00, 3585.85it/s]6.776428559825914
+100%|██████████| 30457/30457 [00:08<00:00, 3454.94it/s]
+  0%|          | 0/14853 [00:00<?, ?it/s]Jam jest Jacek,
+Tu zwychaj rozbmoda się zwiłorach, rodzinę
+I przebaczył? to jest ścianie w mieczej,
+Daremne o troni i osoba granim,
+To Pan znakszy: fajście przykrawyć.
+
+    Otwał, ni zdrowu i chciał przyzdroża!
+Cze
+epoch number: 15
+100%|██████████| 14853/14853 [25:33<00:00,  9.52it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+ 99%|█████████▉| 30219/30457 [00:08<00:00, 3895.83it/s]6.7983184965338115
+100%|██████████| 30457/30457 [00:08<00:00, 3770.16it/s]
+  0%|          | 0/14853 [00:00<?, ?it/s]Jam jest Jacektów twarza!
+Rózbie na pozbiejem się Możkarny! «Dalej, już gęste Majoren».
+
+    Fpan musź, wychowany, żeby, zamyka
+Jach drugi białe. Wprawił pijnę»cy mnie młody;
+Że blisk mu zameszte mniku, czył.
+
+
+epoch number: 16
+100%|██████████| 14853/14853 [27:25<00:00,  7.60it/s]
+validation perplexity:
+100%|██████████| 30457/30457 [00:09<00:00, 3051.75it/s]
+  0%|          | 17/14853 [00:02<29:51,  8.28it/s]6.819709806060204
+Jam jest Jacek;» Rykulkiem pieklonem.
+Żydwo mnie pierli przecież próczechem tenufi;
+Lecz chce skóry znam jaso strzały konéa, spomniste mogłem*.
+Szła do ami tą wówczyskiej wnitym waszenie,
+Krzyż się strzniesi mnie,
+epoch number: 17
+100%|██████████| 14853/14853 [26:22<00:00, 10.53it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+ 99%|█████████▉| 30089/30457 [00:07<00:00, 3871.85it/s]6.846095570970738
+100%|██████████| 30457/30457 [00:07<00:00, 3838.52it/s]
+Jam jest Jacek, drogę cęca u2nie zwrócił
+I szablistrem: drzeć, jazdyś ko niemienny przegowi,
+Czy u nas drogi
+I wieść naczył, za tym odmówił się upieszcząca bój ciska,
+Bo w konoś wzałem jako dobryka tegusty, straszn
+epoch number: 18
+100%|██████████| 14853/14853 [26:38<00:00,  9.29it/s]
+ 26%|██▋       | 7998/30457 [00:01<00:05, 4351.18it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:08<00:00, 3716.47it/s]
+  0%|          | 24/14853 [00:02<23:42, 10.43it/s]6.89194351549003
+Jam jest Jacek forwem zajkany
+I kładać sile! dogryć wcząsał do dybru,
+Tak drogem królewskie rzekła — tygusz postrzągał;
+Od strzela śród cimerał: kwotam kłasysz jute,
+Skrzywdzoknym, przyjaciel kładną przyto, w mracą
+epoch number: 19
+100%|█████████▉| 14851/14853 [30:08<00:00,  9.24it/s]validation perplexity:
+100%|██████████| 14853/14853 [30:08<00:00,  9.54it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4259.38it/s]
+6.946997918644559
+Jam jest Jacek z ludem zawychnęła jako,
+Hrabia mnie i Horeszków cali już potrzemnie,
+A tylko mój zawijał, łapim się i wkradyć.
+
+    «To tobie pacierz Rejteraz?
+Nietażen od jego wortu bogach, nie poli,
+Daszy głowę w
+epoch number: 20
+100%|█████████▉| 14845/14853 [25:28<00:00, 10.22it/s]validation perplexity:
+100%|██████████| 14853/14853 [25:28<00:00, 11.00it/s]
+ 14%|█▍        | 4228/30457 [00:01<00:07, 3540.73it/s]7.014135657458999
+Jam jest Jacek Jacek —
+Hracia w jatom zabił gmaczy,
+Ja, nastronem dwie pokszym, mnie dośobu.
+Gdy go żychosty wojewarz wypnąszył w ręku,
+I pojedyni i co przerwał przecież konewkać…
+Major i te mał o ścisną prz charty
+test perplexity:
+100%|██████████| 30457/30457 [00:07<00:00, 4337.78it/s]
+ 51%|█████     | 22296/43851 [00:04<00:05, 3941.27it/s]6.744794953139677
+100%|██████████| 43851/43851 [00:09<00:00, 4513.96it/s]
