@@ -237,3 +237,461 @@ test perplexity:
 100%|██████████| 30457/30457 [00:07<00:00, 4337.78it/s]
  51%|█████     | 22296/43851 [00:04<00:05, 3941.27it/s]6.744794953139677
 100%|██████████| 43851/43851 [00:09<00:00, 4513.96it/s]
+
+
+WITH DROPOUT AND EMBEDDING
+/Users/agnieszka.paszek/venv/tcs-ml/bin/python /Users/agnieszka.paszek/projects/tcs-ml/recurrent/lstm.py
+371343
+87
+validation perplexity:
+ 99%|█████████▉| 30258/30457 [00:10<00:00, 2416.67it/s]85.2000565284403
+epoch number: 1
+100%|██████████| 30457/30457 [00:10<00:00, 2975.35it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]/Users/agnieszka.paszek/venv/tcs-ml/lib/python3.6/site-packages/autograd/numpy/numpy_vjps.py:444: FutureWarning: Using a non-tuple sequence for multidimensional indexing is deprecated; use `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as an array index, `arr[np.array(seq)]`, which will result either in an error or a different result.
+  return lambda g: g[idxs]
+100%|██████████| 928/928 [08:52<00:00,  1.83it/s]
+ 32%|███▏      | 9888/30457 [00:02<00:04, 4226.56it/s]validation perplexity:
+10.106493926894412
+Jam jest Jacekać
+I syfiał, cestał, ledzie się Tożnie,
+Alok ojruczy,
+Gedziały,
+Baniastwie uszczenie,
+Okoże,
+Iżdyszoł słoga,
+Posłachną:
+Propowiał, i gomiecie,
+Nie słuj!
+Cogóta,
+Czarych tej tak zniech,
+Myklanał; chani
+epoch number: 2
+100%|██████████| 30457/30457 [00:07<00:00, 4170.23it/s]
+ 99%|█████████▉| 917/928 [08:20<00:05,  1.84it/s]validation perplexity:
+8.22388984094699
+Jam jest Jacek pod seniona
+A Hrabia w podkar szają — Łoźcie,
+To waszenanie
+Zenie,
+Gorzany;
+I posię w domojąc seru dziwy;
+Pońciby za słum kręczos, jak jak onto, młodziła:
+Gdają,
+Ża matru, my wrziscy radzą domowanie,
+100%|██████████| 928/928 [08:26<00:00,  1.82it/s]
+epoch number: 3
+100%|██████████| 30457/30457 [00:07<00:00, 4177.27it/s]
+100%|██████████| 928/928 [08:47<00:00,  1.57it/s]validation perplexity:
+
+100%|█████████▉| 30437/30457 [00:07<00:00, 3922.15it/s]7.60126015649984
+100%|██████████| 30457/30457 [00:07<00:00, 3927.40it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek dworawił się miąskiego nakonarł tej nie jedwiony
+Wołskie się: to był łok Kim reczny
+Nadział go dwarzy,
+Długi powiedzy się porzędził
+(Bóż tu i zgodził kisnął podsłała
+Taj wabinowci:
+I zatwałsza — razy
+epoch number: 4
+ 99%|█████████▊| 916/928 [09:14<00:06,  1.73it/s]validation perplexity:
+100%|██████████| 928/928 [09:20<00:00,  1.79it/s]
+ 44%|████▍     | 13412/30457 [00:03<00:04, 3892.62it/s]7.175334256515603
+Jam jest Jacek zawkła corąc,
+Ciarna nawet podział wyszli w to strożonym mna czuła gością, że w przeciwni puściska wpołają
+Zgądowię wyraz jęż od domu cudził,
+Że bogłostroneuszy, malerowę.
+Maśliwski — Telimenaą!
+Stoc
+epoch number: 5
+100%|██████████| 30457/30457 [00:07<00:00, 3885.08it/s]
+100%|██████████| 928/928 [09:25<00:00,  1.67it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:09<00:00, 3288.66it/s]
+6.989238021112241
+Jam jest Jacek z darubie,
+I rozciennego rozumiono do gardzie,
+Kto już na tylko wywiedział nie jest z zabawił się, matach się pochylił,
+Ten o służyć:
+Na wiemią były zabawił!»
+
+    Wa się końcu wieczerz rykierka
+Odca
+epoch number: 6
+100%|██████████| 928/928 [09:37<00:00,  1.71it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|█████████▉| 30341/30457 [00:07<00:00, 4200.70it/s]6.771893226065821
+100%|██████████| 30457/30457 [00:07<00:00, 4044.52it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek,
+Broń wprzydali, na ziemię,
+Bernardynie
+Już było wał należyć
+Nie dyeck zaśmiały,
+I z Bolezów
+A przez szczyta,
+A po rękowej mogą
+Błoków,
+Weszcze się rodzinie
+I których  z domy,
+Tam od luducyje:
+Na cóż
+epoch number: 7
+ 98%|█████████▊| 911/928 [08:43<00:09,  1.87it/s]validation perplexity:
+100%|██████████| 928/928 [08:53<00:00,  1.87it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4133.51it/s]
+  4%|▎         | 34/928 [00:18<08:04,  1.84it/s]6.63852111863416
+Jam jest Jacek i po brzytwej o botu umiał do kole rozsiadę,
+Znajdzistej panów,
+Duszy od góry?
+Chociaż porzedłem.
+Widociej spiszenie oświatał,
+Wyzwał wiatry:
+Milczy ma rzędzit się, co go z pierwsze Maćka.
+Nim się ko
+epoch number: 8
+ 96%|█████████▋| 895/928 [08:07<00:18,  1.81it/s]validation perplexity:
+100%|██████████| 928/928 [08:26<00:00,  1.72it/s]
+ 22%|██▏       | 6626/30457 [00:01<00:05, 4034.06it/s]6.4686535311332065
+Jam jest Jacek głowę w głos podszeczna,
+Do krzyżkolnie szlachta z uczu, mężczynę
+Pewna, że przykłał go gromadzane,
+Pytają, podniósłszy wyzemna. Tadeusz jak nie wymów do dziś mówiąca, gdy pod wyrazy
+Najedzieźny ucis
+epoch number: 9
+100%|██████████| 30457/30457 [00:07<00:00, 4046.39it/s]
+100%|██████████| 928/928 [08:24<00:00,  1.80it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4163.49it/s]
+  0%|          | 4/928 [00:02<08:23,  1.84it/s]validation perplexity:
+6.392653350790473
+Jam jest Jacek:
+Rozwadził już nad rzucał się i dla dziś zgody.
+Lecz słomem atrwych kilktra! mnie zgodzie,
+Wyrafami swoich u kiwatne pórę cenauka.
+
+    Lecz usłychał; kropie, zbyt po słuchali, że wyprywać i tymczas
+epoch number: 10
+100%|██████████| 928/928 [08:23<00:00,  1.77it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4159.82it/s]
+  0%|          | 1/928 [00:00<08:49,  1.75it/s]validation perplexity:
+6.383378080137816
+Jam jest Jacek
+I mam włość w pierwszej co jak wdzięknął,
+I pan się z Sapustwa. Tam o nas wpół jeszcze — rzekł
+Widział z tyłu przyjaciele się w saży».
+
+    Włać wizy głowę to puzwie światcych*.
+
+    Telimena, co wie
+epoch number: 11
+100%|██████████| 928/928 [08:24<00:00,  1.85it/s]
+ 21%|██        | 6428/30457 [00:01<00:05, 4244.50it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:07<00:00, 4127.19it/s]
+  1%|          | 7/928 [00:03<08:23,  1.83it/s]6.2849502776903305
+Jam jest Jacek,
+Jak szlachtę leży lewego;
+Choćby podłogać się poglądans, krężą.
+Jak bardzo obiegł; w domu zwierząt młodzienie,
+Dlazkieni, to jestem śloda go głowy.
+Ale z powigarz skrzyknął śmiejem, że się, zbiły si
+epoch number: 12
+100%|██████████| 928/928 [08:24<00:00,  1.88it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4114.18it/s]
+  1%|▏         | 12/928 [00:06<08:27,  1.80it/s]validation perplexity:
+6.255363712306388
+Jam jest Jacek.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+I nie wiatr zasnościa!
+
+    Tadeusz zapowiedził do dworze;
+Kręcąc oczy w duchając naożyć».
+
+    Ogniewił i do nas skończył,
+Pamiętną zwały, co się złożywy stowecki
+Radłszy kotowym od
+epoch number: 13
+100%|█████████▉| 926/928 [08:23<00:01,  1.85it/s]validation perplexity:
+100%|██████████| 928/928 [08:24<00:00,  1.80it/s]
+ 48%|████▊     | 14594/30457 [00:03<00:04, 3833.49it/s]6.167736534320913
+Jam jest Jaceka,
+A że w róży, bo poznaczy, i rzekł Pośledztwach,
+Wysinając pierwszy na rady.
+Obrywających sporu;
+Sąsnął cofnął się strachem brzegów
+I słychać Erodzonych szturmem śmiercia,
+Albo po dobrzynistwo uczto
+epoch number: 14
+100%|██████████| 30457/30457 [00:07<00:00, 4144.33it/s]
+100%|██████████| 928/928 [08:23<00:00,  1.87it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4096.75it/s]
+  1%|          | 9/928 [00:04<08:26,  1.82it/s]validation perplexity:
+6.166572648888152
+Jam jest Jacek,
+Pyszką ludzi tak się domu.
+Widać, że nie udził się, robakoty
+Wytknął wybierając w kroki,
+I starzej widzi dla hodnie,
+Wreszcie do strzelbłych zapół dworu.
+Sług wpuściwiów już wzniesiony, spode zbłoni
+epoch number: 15
+100%|██████████| 928/928 [08:22<00:00,  1.86it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4134.21it/s]
+  1%|          | 10/928 [00:05<08:14,  1.85it/s]validation perplexity:
+6.148926480272886
+Jam jest Jacek
+I z żucie:
+
+    «Co też odwierać rozpięty,
+Bap tworzą, tam muszę na śmieł, że nałeżyć!
+Może baczy, choć małyśmy groźbość kwestarz z głowę;
+Kochankiem, z nim ogi
+Na nie do nią ich sztukie».
+
+    Ale m
+epoch number: 16
+100%|██████████| 928/928 [08:26<00:00,  1.83it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4161.10it/s]
+  1%|          | 6/928 [00:03<08:12,  1.87it/s]validation perplexity:
+6.085205566598675
+Jam jest Jacek.
+
+                                                                 już za książę długo wołał: «Gładnie głowę potem,
+Pdawniej co mnie tego się zogały,
+Czy już wypamię brylaz rozmownego, o wciąż wruczo
+epoch number: 17
+100%|██████████| 928/928 [08:51<00:00,  1.78it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+ 99%|█████████▉| 30144/30457 [00:07<00:00, 3942.32it/s]6.127610532391656
+100%|██████████| 30457/30457 [00:07<00:00, 4003.05it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek.
+
+    «Ja Kluczniki uszuna,
+Ciągnął już wypisać odwrócił:
+Synek długie mamy się z czasak pogonił,
+W poluisto, jakby cienkie brzędzie pust ojcem krwawymi :
+Te powstać jako stare, aniki młody, blisko s
+epoch number: 18
+100%|██████████| 928/928 [18:07<00:00,  1.34it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:16<00:00, 1846.88it/s]
+5.874986587010895
+Jam jest Jacek,
+
+    Przerwał — z polic coś gromada;
+Włość nasze ku rozgu:
+Małe polęczny pogodne, pity szerok swe strusił
+I Gerwazy widzieć wyrwał sŻytów pisasz!
+Zaś się i powiedziały, dobywy,
+Potem milczcie, — Pow
+epoch number: 19
+100%|██████████| 928/928 [10:45<00:00,  1.76it/s]
+  7%|▋         | 2017/30457 [00:00<00:08, 3166.49it/s]validation perplexity:
+ 99%|█████████▉| 30237/30457 [00:11<00:00, 2467.52it/s]5.8439875996826345
+100%|██████████| 30457/30457 [00:11<00:00, 2551.57it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek:
+Poznańczeniec, w oczu jest szlachty i kręcone.
+
+    Hrabia wojsko, że smutnie tu wzniesionej szarakoty
+Głowę
+Widzi, na (szabackiego was o ciemność;
+Wielkie żołnych razem i głową rozbiera owiekła:
+Bo
+epoch number: 20
+100%|██████████| 928/928 [08:59<00:00,  1.80it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 4093.14it/s]
+  0%|          | 1/928 [00:00<08:21,  1.85it/s]validation perplexity:
+5.815395867947801
+Jam jest Jacek o poczciwą.
+Na pych patrząc, zacięto hatan karki,
+On z tym rękojego przebył teszcze dał się słońcem,
+Lecz go przez ust siebie może uwiązanej waści,
+Słyszało wiedzieć się, prywiek, że mu przy niebysta
+epoch number: 21
+100%|██████████| 928/928 [09:39<00:00,  1.58it/s]
+validation perplexity:
+100%|██████████| 30457/30457 [00:09<00:00, 3367.78it/s]
+5.807357108790784
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek,
+Wzdłuż i chwyta, słuchał Horeszków, wszyscy, a tu bracie,
+A nim było cel; nie mógł pan po ręku pochwyczał,
+Które myślił na razu czamek nie ważne dusza niedźwiedź, nie zuoko.
+
+    Czym jechał poznał
+epoch number: 22
+100%|█████████▉| 927/928 [09:48<00:00,  1.41it/s]validation perplexity:
+100%|██████████| 928/928 [09:49<00:00,  1.48it/s]
+100%|█████████▉| 30406/30457 [00:08<00:00, 4077.06it/s]5.776854679786458
+100%|██████████| 30457/30457 [00:08<00:00, 3653.11it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek party,
+Wyraz z ludzie, co to szlachta, tak się chwilę,
+I na szczerbież, narodym krzyknął, wyszedł się bezłyszał,
+Pan niebezpieczeniem podobny — — lecz to chwyciła, biegliwiożone;
+Zdawał się, które na
+epoch number: 23
+ 99%|█████████▉| 920/928 [09:38<00:04,  1.76it/s]validation perplexity:
+100%|██████████| 928/928 [09:42<00:00,  1.75it/s]
+100%|██████████| 30457/30457 [00:09<00:00, 3303.59it/s]
+5.79854594731957
+Jam jest Jacek,
+Która na pogoni już kopyta Jacek do szlachta — głowach spuściły
+I bagnetą wpełkiona wszystkich miesięczając od októry ustąpił
+Strzelców i postrzegł od malasy,
+Lecz gdy mu młodzież, że już brawadno;
+epoch number: 24
+100%|█████████▉| 927/928 [09:07<00:00,  1.65it/s]validation perplexity:
+100%|██████████| 928/928 [09:07<00:00,  1.66it/s]
+100%|██████████| 30457/30457 [00:09<00:00, 3109.05it/s]
+5.684535562436901
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek,
+I posapili głową wasz przez różnych modę po swego rozumie
+Wytrześć się Dziewicy i bardzo zwierzał;
+Z uciekłają znaczysz zgody po zgody spowiedział,
+I znalenia. Nie żył się, mnie to ażbieńcem rozpodz
+epoch number: 25
+100%|█████████▉| 927/928 [09:48<00:00,  1.60it/s]validation perplexity:
+100%|██████████| 928/928 [09:49<00:00,  1.55it/s]
+100%|██████████| 30457/30457 [00:09<00:00, 3317.45it/s]
+5.6699846099063
+Jam jest Jacek
+I z Horeszków się jakby gromadów światławy.
+
+    Siedział: «Nie w lubanie,
+I nicemie Tadeusz, dziedziców na szczepnie,
+I znowu Pzeyku spada musi nagadło urosłości,
+I rozmów Sędziego broń poczciwy, ub
+epoch number: 26
+100%|██████████| 928/928 [09:37<00:00,  1.50it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:10<00:00, 3042.58it/s]
+5.674936946726504
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek.
+«Cóż był spotkać dawno wielkim stryj — Widziałem;
+I gdyby dziś przerwał Sędzia, gdy niegdyś stanowieniem,
+Tu płynął ręce
+Mówił szarakter w prawo.
+
+    W uszu, rozterzone podniósł, potem zaczęli,
+Jak
+epoch number: 27
+100%|██████████| 928/928 [10:12<00:00,  1.75it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|█████████▉| 30348/30457 [00:15<00:00, 4070.84it/s]5.610145411203726
+100%|██████████| 30457/30457 [00:15<00:00, 2001.62it/s]
+  0%|          | 0/928 [00:00<?, ?it/s]Jam jest Jacek ręką godnami,
+I czasumi i przy bitwie jest u książęcą — Zosię?»
+Wszakże wypadku splądać się wyrzekła umieczenie:
+Gerwazy, ale wpadł na dziecną ręką obcym rzecz z zazmowa
+Spozierał się rozstrzegam, do
+epoch number: 28
+100%|█████████▉| 927/928 [09:23<00:00,  1.79it/s]validation perplexity:
+100%|██████████| 928/928 [09:23<00:00,  1.82it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 3944.82it/s]
+5.622498800162552
+Jam jest Jacek,
+Po lisów rzekł: «Ruskiem głowy,
+A gdy na krajem, czasy jak sam żółta…»
+Tu zawet do ręku wszystko lata!
+Na książki, to rak maczując i zioły.
+Dziwnym wielkiw ludzie;
+Słychać, że to w Hrabiego strony,
+
+epoch number: 29
+100%|█████████▉| 927/928 [08:39<00:00,  1.81it/s]validation perplexity:
+100%|██████████| 928/928 [08:39<00:00,  1.75it/s]
+100%|█████████▉| 30424/30457 [00:07<00:00, 4186.97it/s]5.61047879865059
+100%|██████████| 30457/30457 [00:07<00:00, 4049.79it/s]
+Jam jest Jacek,
+  0%|          | 0/928 [00:00<?, ?it/s]Syski panów, powoli w pole, ujrzenie do patarki,
+Jak wstrzymują Brzydzić lowie wyciągnął w starezgę,
+I dziewieckie głowy jak na dalekiem strzały;
+Bo że do bramę i brzuchać to w koniu, Obrazami
+I pod
+epoch number: 30
+100%|██████████| 928/928 [08:33<00:00,  1.84it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:07<00:00, 3985.85it/s]
+5.599658215780194
+Jam jest Jacek ała zdawie
+Stala okataliją, opowiadał,
+a gdy blisko smutniec, i pono wzrok sukniewi.
+Do szlachtą w kapytelkowana napój chwały
+Podróżnek jest od ludzki i lub obliczem;
+Że m modno mnie tylko głowę ochm
+epoch number: 31
+100%|██████████| 928/928 [08:51<00:00,  1.67it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|██████████| 30457/30457 [00:08<00:00, 3445.31it/s]
+5.59519132445652
+Jam jest Jacek…
+Śledztwo twych Bóg gromadę!
+Lepiej, co tuż wspomnienią i głowę».
+
+    Gdy Mężczyźnie na wzroku w niebaczki jest broń za nim dostał
+I od nim Sędziego, ale nas od różowie,
+Której od słończa, więce bał
+epoch number: 32
+ 99%|█████████▊| 916/928 [09:26<00:06,  1.80it/s]validation perplexity:
+100%|██████████| 928/928 [09:33<00:00,  1.78it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 3810.81it/s]
+  2%|▏         | 14/928 [00:07<08:14,  1.85it/s]5.58233186188886
+Jam jest Jacek dziwej sukne,
+Bo Sędziego boki stare, sługą,
+Podobne przy pusła rodzinie przez Maćki.
+Głowę mu gromadel, potem rozświęcy, słudzy, szereg sztuki,
+Wbił, nie chcę, jest wielkie schylony,
+Zrzewnie. A rum
+epoch number: 33
+100%|██████████| 928/928 [10:10<00:00,  1.80it/s]
+100%|██████████| 30457/30457 [00:07<00:00, 3989.54it/s]
+  0%|          | 1/928 [00:00<08:32,  1.81it/s]validation perplexity:
+5.587157801988761
+Jam jest Jacek widy!
+On dwa łące i Telimena głośniej Marnie
+Z wsi stare będziec szedł Sopliców!
+Przmiałem na koronnego zakonnym głowWów
+Na dziedzic, jak natrępie Scyzorych głowę;
+Wojski ich oczy mej coraz na nim gł
+epoch number: 34
+100%|██████████| 928/928 [09:39<00:00,  1.58it/s]
+validation perplexity:
+100%|██████████| 30457/30457 [00:10<00:00, 2962.77it/s]
+5.583977013349598
+Jam jest Jacek pagórki.
+
+    Gdy wesódwe, co starca hołowa mruczeństwa chustki
+I strasznie mówiła: «Parstwo w cesarz przyszedł,
+I z dał, jako pana Bogu przystępu«.
+
+    Po bardzo krzyżu się niby oba ciągnie,
+Lecz g
+epoch number: 35
+100%|██████████| 928/928 [09:56<00:00,  1.83it/s]
+  0%|          | 0/30457 [00:00<?, ?it/s]validation perplexity:
+100%|█████████▉| 30417/30457 [00:08<00:00, 4022.75it/s]5.585988514700676
+100%|██████████| 30457/30457 [00:08<00:00, 3667.64it/s]
+Jam jest Jacek — Gorzczyka
+Z łóżko Rejtana — rzekł Hrabia rzecz w Słońca me przed oczy
+Nagle widział i panów i chwyty?
+
+    Za tem panie, bo był ostroonech.
+
+    Weźdza, że skryć na i kiedy podniósł, ale wstęgi;
+Py
+test perplexity:
+100%|█████████▉| 43658/43851 [00:11<00:00, 3372.66it/s]5.484315712273747
+100%|██████████| 43851/43851 [00:11<00:00, 3916.20it/s]
+
+Process finished with exit code 0
