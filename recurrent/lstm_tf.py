@@ -60,8 +60,8 @@ class LSTM:
         self.is_training = tf.placeholder_with_default(False, shape=(), name='is_training')
         self.prob = tf.placeholder_with_default(1.0, shape=())
 
-        self.W1 = tf.Variable(tf.random_uniform([1, self.x_size, self.h_size], minval=-init_scale, maxval=init_scale))
-        W1_tiled = tf.tile(self.W1, (self.batch_size, 1, 1))
+        self.W1 = tf.Variable(tf.random_uniform([self.x_size, self.h_size], minval=-init_scale, maxval=init_scale))
+        W1_tiled = tf.tile(tf.expand_dims(self.W1, 0), (self.batch_size, 1, 1))
         cell_inputs = tf.matmul(self.inputs, W1_tiled)  # [batch_size, number_of_steps, h_size]
 
         # self.test = tf.Variable(tf.random_uniform([342543, 342], minval=-init_scale, maxval=init_scale))
@@ -70,21 +70,28 @@ class LSTM:
         self.lstm_cell = tf.nn.rnn_cell.LSTMCell(self.h_size)
         outputs, states = tf.nn.dynamic_rnn(self.lstm_cell, cell_inputs, dtype=tf.float32)
 
-        self.W2 = tf.Variable(tf.random_uniform([1, self.h_size, self.y_size], minval=-init_scale, maxval=init_scale))
-        W2_tiled = tf.tile(self.W2, (self.batch_size, 1, 1))
+        self.W2 = tf.Variable(tf.random_uniform([self.h_size, self.y_size], minval=-init_scale, maxval=init_scale))
+        W2_tiled = tf.tile(tf.expand_dims(self.W2, 0), (self.batch_size, 1, 1))
         logits = tf.matmul(outputs, W2_tiled)
 
         cross_entropy = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits, labels=self.targets))
-        self.optimizer = tf.train.AdamOptimizer(self.learning_rate).minimize(cross_entropy)
+        self.optimizer = tf.train.GradientDescentOptimizer(self.learning_rate).minimize(cross_entropy)
         self.sess = tf.InteractiveSession()
         self.sess.run(tf.global_variables_initializer())
 
+        self.inputs_perp = tf.placeholder(tf.float32, [None, self.x_size])
+        self.targets_perp = tf.placeholder(tf.float32, [None, self.y_size])
+        cell_inputs_perp = tf.matmul(self.inputs_perp, self.W1)
+        outputs_perp, states_perp = tf.nn.dynamic_rnn(self.lstm_cell, tf.expand_dims(cell_inputs_perp, 0), dtype=tf.float32)
+        logits_perp = tf.matmul(outputs_perp, tf.expand_dims(self.W2, 0))
+        cross_entropy_perp = tf.reduce_mean(tf.nn.softmax_cross_entropy_with_logits(logits=logits_perp, labels=self.targets_perp))
+        self.perp = tf.exp(cross_entropy_perp)
+
     def perplexity(self, data):
-        pass
+        return self.sess.run(self.perp, {self.inputs_perp: data[:-1], self.targets_perp: data[1:]})
 
     def fit(self):
         training_data_encoded = np.array([char_to_one_hot(c) for c in list(training_data)])
-        print(training_data_encoded.shape)
         training_data_2 = training_data_encoded
         l = len(training_data_2)
         l -= l % self.batch_size
@@ -93,9 +100,10 @@ class LSTM:
         training_data_2 = np.array(list(training_data_2))
         training_data_2 = training_data_2.reshape((self.batch_size, -1, alphabet_size))
 
+        validation_data_encoded = np.array([char_to_one_hot(c) for c in list(validation_data)])
         # sanity check, na poczatku powinno byc ~wielkosci alfabetu
         print('validation perplexity:')
-        print(self.perplexity(validation_data))
+        print(self.perplexity(validation_data_encoded))
         best_validation_perplexity = 100
         for epoch in range(self.num_of_epochs):
             print("epoch number: " + str(epoch + 1))
@@ -108,7 +116,7 @@ class LSTM:
                                                self.is_training: True})
 
             print('validation perplexity:')
-            validation_perplexity = self.perplexity(validation_data)
+            validation_perplexity = self.perplexity(validation_data_encoded)
             print(validation_perplexity)
 
             if validation_perplexity < best_validation_perplexity:
